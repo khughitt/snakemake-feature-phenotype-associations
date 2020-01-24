@@ -1,0 +1,13 @@
+conda-forge::python>=3.7
+conda-forge::r-base
+r-doparallel
+r-arrow
+r-feather
+r-remotes
+r-tidyverse
+lz4
+pyarrow
+numpy
+pandas
+snakemake-minimal
+zstandard
