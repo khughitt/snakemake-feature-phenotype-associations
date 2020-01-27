@@ -1,54 +1,56 @@
 #!/bin/env Rscript
 #
-# Compute feature-phenotype logic regression model
+# Compute feature-phenotype logit regression model
 #
-library(arrow)
-library(tidyverse)
+suppressMessages(library(arrow))
+suppressMessages(library(tidyverse))
 
 source('src/utils.R')
 
 set.seed(1)
 
-save.image('~/tmp2.rda')
-
 # load feature data
 feat_dat <- load_data(snakemake@input$features)
 
-# get feature config
+# get feature settings
 feat_level <- snakemake@wildcards$feature_level
 feat_type <- snakemake@wildcards$feature_type
 phenotype <- snakemake@wildcards$phenotype
-covariate <- snakemake@wildcards$covariate
 
 feat_config <- snakemake@params$config$features[[feat_level]][[feat_type]]
 
-# get phenotype config
+# get phenotype settings
 phenotype <- snakemake@wildcards$phenotype
-sample_id <- snakemake@params$config$phenotype[[phenotype]]$sample_id
+pheno_config <- snakemake@params$config$phenotype[[phenotype]]
+
+# sample id column in phenotype file
+sample_id_col <- pheno_config$sample_id
+
+# association parameters
+assoc_params <- pheno_config$associations[[snakemake@wildcards$covariate]]$params
 
 # load phenotype data
 pheno_dat <- read_tsv(snakemake@input$phenotype, col_types = cols())
 
 # ensure that sample order is consistent between feature/pheno data
-ind <- match(colnames(feat_dat)[-1], pull(pheno_dat, sample_id))
+ind <- match(colnames(feat_dat)[-1], pull(pheno_dat, sample_id_col))
 pheno_dat <- pheno_dat[ind, ]
-
-if (!all(colnames(feat_dat)[-1] == pull(pheno_dat, sample_id))) {
-  stop("Feature/phenotype sample IDs do not match!")
-}
 
 # create a version of the feature data without the id columns, for convenience
 feat_mat <- as.matrix(feat_dat[, -1])
 
-# get covariate data vector
-covariate <- factor(pull(pheno_dat, snakemake@wildcards$covariate))
+if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
+  stop("Feature/phenotype sample IDs do not match!")
+}
 
-# perform multinomial logistic regression
-# null <- glm(covariate ~ 1, family = "binomial")
+# get covariate data vector
+covariate <- factor(pull(pheno_dat, assoc_params$field))
 
 # build feature-covariate logit regression models and record p-values
 pvals <- apply(feat_mat, 1, function(x) {
-  mod <- glm(covariate ~ x, family = "binomial")
+  # ignore infrequent "fitted probabilities numerically 0 or 1" warnings that may arise
+  # due to quasi- or perfect separation
+  mod <- suppressWarnings(glm(covariate ~ x, family = "binomial"))
 
   # in some cases (e.g. when x contains mostly 0's), fit will only include an
   # intercept term, making it necessary to check the coef dimensions
@@ -64,9 +66,22 @@ pvals <- apply(feat_mat, 1, function(x) {
 })
 
 # store result
-res <- data.frame(pull(feat_dat, 1), pvals)
+feat_id_col <- colnames(feat_dat)[1]
+feat_ids <- pull(feat_dat, feat_id_col)
 
-colnames(res) <- c(colnames(feat_dat)[1], 
-                   sprintf("%s_pval", snakemake@wildcards$covariate))
+res <- data.frame(feat_ids, pvals)
+
+colnames(res) <- c(feat_id_col, sprintf("%s_pval", snakemake@wildcards$covariate))
+
+# for microarray data which may include multiple gene symbols for a single
+# row (e.g. "ABC1 // ABC2 // ETC"), split each such entries into multiple
+# rows and then collapse duplicated gene symbols, keeping only the lowest
+# p-value for each symbol
+if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
+  res <- res %>%
+    separate_rows(symbol, sep = " ?//+ ?") %>%
+    group_by(symbol) %>%
+    summarise_all(min)
+}
 
 arrow::write_parquet(res, snakemake@output[[1]], compression = 'ZSTD')

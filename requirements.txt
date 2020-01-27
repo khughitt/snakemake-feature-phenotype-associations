@@ -4,6 +4,7 @@ r-doparallel
 r-arrow
 r-feather
 r-remotes
+r-survival
 r-tidyverse
 lz4
 pyarrow
