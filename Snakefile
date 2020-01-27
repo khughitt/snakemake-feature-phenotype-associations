@@ -32,12 +32,12 @@ for id_ in datasets:
     for feat_level in cfg['features']:
         for feat_type in cfg['features'][feat_level]:
             for pheno in cfg['phenotypes']:
-                for assoc in cfg['associations']:
+                for covariate in cfg['phenotypes'][pheno]['associations']:
                     # feature/phenotype inputs
                     xinput = cfg['features'][feat_level][feat_type]
                     yinput = cfg['phenotypes'][pheno]
 
-                    method = cfg['associations'][assoc]['method']
+                    method = cfg['phenotypes'][pheno]['associations'][covariate]['method']
 
                     # if this is the first time an association of this type is being
                     # added, initialize empty dicts to store relevant info
@@ -56,22 +56,22 @@ for id_ in datasets:
                         expands[method]['feature_level'] = []
                         expands[method]['feature_type']  = []
                         expands[method]['phenotype']     = []
-                        expands[method]['assoc']         = []
+                        expands[method]['covariate']     = []
 
                     expands[method]['dataset'].append(id_)
                     expands[method]['feature_level'].append(feat_level)
                     expands[method]['feature_type'].append(feat_type)
                     expands[method]['phenotype'].append(pheno)
-                    expands[method]['assoc'].append(assoc)
+                    expands[method]['covariate'].append(covariate)
 
                     # store params
-                    params[id_][assoc] = cfg['associations'][assoc]['params']
+                    params[id_][covariate] = cfg['phenotypes'][pheno]['associations'][covariate]['params']
 
 # function to determine input files associated with a set of wildcards
 def get_inputs(wildcards):
     return {
-        'features':  datasets[wildcards.dataset]['features'][wildcards.feature_level][wildcards.feature_type],
-        'phenotype': datasets[wildcards.dataset]['phenotypes'][wildcards.phenotype]
+        'features': datasets[wildcards.dataset]['features'][wildcards.feature_level][wildcards.feature_type],
+        'phenotype': datasets[wildcards.dataset]['phenotypes'][wildcards.phenotype]['path']
     }
 
 # expected outputs
@@ -80,55 +80,54 @@ all_outputs = []
 for method in xinputs:
     outfile = '{}.parquet'.format(method)
 
-    outputs = expand(join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{assoc}', outfile),
+    outputs = expand(join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}', outfile),
                      zip,
                      dataset=expands[method]['dataset'],
                      feature_level=expands[method]['feature_level'],
                      feature_type=expands[method]['feature_type'],
                      phenotype=expands[method]['phenotype'],
-                     assoc=expands[method]['assoc'])
+                     covariate=expands[method]['covariate'])
 
     all_outputs = all_outputs + outputs
 
-breakpoint()
 #
 # rules
 #
 rule all:
     input: all_outputs
 
-if 'logistic_regression' in xinputs:
+if 'logit' in xinputs:
     rule logistic_regression:
         input: unpack(get_inputs)
         params:
-            lambda wildcards, output: datasets[wildcards.dataset]['associations']['logistic_regression']
+            config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/logistic_regression.parquet')
+            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/logit.parquet')
         script: 'src/compute_logistic_regression.R'
 
-if 'survival_regression' in xinputs:
+if 'survival' in xinputs:
     rule survival_regression:
         input: unpack(get_inputs)
         params:
-            lambda wildcards, output: datasets[wildcards.dataset]['associations']['survival_regression']
+            config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_regression.parquet')
+            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/survival.parquet')
         script: 'src/compute_survival_regression.R'
 
 if 'pearson_correlation' in xinputs:
     rule pearson_correlation:
         input: unpack(get_inputs)
         params:
-            lambda wildcards, output: datasets[wildcards.dataset]['associations']['pearson_correlation']
+            config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/pearson_correlation.parquet')
+            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/pearson_correlation.parquet')
         script: 'src/compute_pearson_correlation.py'
 
 if 'spearman_correlation' in xinputs:
     rule spearman_correlation:
         input: unpack(get_inputs)
         params:
-            lambda wildcards, output: datasets[wildcards.dataset]['associations']['spearman_correlation']
+            config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/spearman_correlation.parquet')
-        script: 'test.R'
+            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/spearman_correlation.parquet')
+        script: 'src/compute_spearman_correlation.R'
