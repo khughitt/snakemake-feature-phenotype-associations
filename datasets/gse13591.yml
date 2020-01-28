@@ -1,0 +1,18 @@
+#
+# GSE13591 data source
+# 
+name: GSE13591
+
+features:
+  genes:
+    rna: '/data/human/geo/GSE13591/processed/GSE13591_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/fmap/1.0/geo/GSE13591/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical_data:
+    path: '/data/human/geo/GSE13591/processed/GSE13591_sample_metadata.tsv'
+    associations:
+      mm_stage:
+        method: logit
+        params:
+          field: mm_stage

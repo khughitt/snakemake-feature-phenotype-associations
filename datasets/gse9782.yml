@@ -12,10 +12,6 @@ phenotypes:
   clinical_data:
     path: '/data/human/geo/GSE9782/processed/GSE9782_sample_metadata.tsv'
     associations:
-      patient_subgroup:
-        method: logit
-        params:
-          field: patient_subgroup
       treatment_response:
         method: logit
         params:

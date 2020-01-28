@@ -1,0 +1,18 @@
+#
+# GSE118900 data source
+# 
+name: GSE118900
+
+features:
+  genes:
+    rna: '/data/human/geo/GSE118900/processed/GSE118900_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/fmap/1.0/geo/GSE118900/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical_data:
+    path: '/data/human/geo/GSE118900/processed/GSE118900_sample_metadata.tsv'
+    associations:
+      mm_stage:
+        method: logit
+        params:
+          field: mm_stage

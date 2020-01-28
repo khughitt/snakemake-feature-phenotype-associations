@@ -1,0 +1,18 @@
+#
+# GSE19554 data source
+# 
+name: GSE19554
+
+features:
+  genes:
+    rna: '/data/human/geo/GSE19554/processed/GSE19554_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/fmap/1.0/geo/GSE19554/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical_data:
+    path: '/data/human/geo/GSE19554/processed/GSE19554_sample_metadata.tsv'
+    associations:
+      tumor_stage:
+        method: logit
+        params:
+          field: tumor_stage

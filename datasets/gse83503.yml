@@ -1,0 +1,22 @@
+#
+# GSE83503 data source
+# 
+name: GSE83503
+
+features:
+  genes:
+    rna: '/data/human/geo/GSE83503/processed/GSE83503_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/fmap/1.0/geo/GSE83503/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical_data:
+    path: '/data/human/geo/GSE83503/processed/GSE83503_sample_metadata.tsv'
+    associations:
+      pfs_event:
+        method: logit
+        params:
+          field: pfs_event
+      patient_died:
+        method: logit
+        params:
+          field: patient_died

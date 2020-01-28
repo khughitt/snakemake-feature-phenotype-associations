@@ -1,0 +1,18 @@
+#
+# GSE2912 data source
+# 
+name: GSE2912
+
+features:
+  genes:
+    rna: '/data/human/geo/GSE2912/processed/GSE2912_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/fmap/1.0/geo/GSE2912/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical_data:
+    path: '/data/human/geo/GSE2912/processed/GSE2912_sample_metadata.tsv'
+    associations:
+      mm_stage:
+        method: logit
+        params:
+          field: mm_stage
