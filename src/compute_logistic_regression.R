@@ -23,14 +23,14 @@ feat_config <- snakemake@params$config$features[[feat_level]][[feat_type]]
 phenotype <- snakemake@wildcards$phenotype
 pheno_config <- snakemake@params$config$phenotype[[phenotype]]
 
-# sample id column in phenotype file
-sample_id_col <- pheno_config$sample_id
-
 # association parameters
 assoc_params <- pheno_config$associations[[snakemake@wildcards$covariate]]$params
 
 # load phenotype data
 pheno_dat <- read_tsv(snakemake@input$phenotype, col_types = cols())
+
+# first column in the phenotype file corresponds to sample id
+sample_id_col <- colnames(pheno_dat)[1]
 
 # ensure that sample order is consistent between feature/pheno data
 ind <- match(colnames(feat_dat)[-1], pull(pheno_dat, sample_id_col))
@@ -81,7 +81,11 @@ if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
   res <- res %>%
     separate_rows(symbol, sep = " ?//+ ?") %>%
     group_by(symbol) %>%
-    summarise_all(min)
+    summarise_all(min) %>%
+    ungroup()
 }
+
+res <- res %>%
+  arrange(get(feat_id_col))
 
 arrow::write_parquet(res, snakemake@output[[1]], compression = 'ZSTD')

@@ -11,7 +11,6 @@ features:
 phenotypes:
   clinical_data:
     path: '/data/human/geo/GSE9782/processed/GSE9782_sample_metadata.tsv'
-    sample_id: 'geo_accession'
     associations:
       patient_subgroup:
         method: logit
