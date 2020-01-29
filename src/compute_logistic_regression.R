@@ -66,22 +66,28 @@ if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
 # get covariate data vector
 covariate <- factor(pull(pheno_dat, assoc_params$field))
 
+save.image('~/tmp5.rda')
+stop()
+
 # build feature-covariate logit regression models and record p-values
-pvals <- apply(feat_mat, 1, function(x) {
+pvals <- apply(feat_mat[5:10,], 1, function(x) {
   # ignore infrequent "fitted probabilities numerically 0 or 1" warnings that may arise
   # due to quasi- or perfect separation
-  mod <- suppressWarnings(glm(covariate ~ x, family = "binomial"))
+  # mod <- suppressWarnings(glm(covariate ~ x, family = "binomial"))
+  mod <- glm(covariate ~ x, family = "binomial")
 
   # in some cases (e.g. when x contains mostly 0's), fit will only include an
   # intercept term, making it necessary to check the coef dimensions
   coefs <- coef(summary(mod))
 
-  # "2" and "4" are the expected number of rows and columns in coef() output, and the
-  # indices associated with the p-value for the fitted model
-  if (all(dim(coefs) == c(2, 4))) {
-    coefs[2, 4]
+  # check to see if independent variant is included in fit
+  if ('x' %in% rownames(coefs)) {
+    # get p-value
+    coefs['x', 'Pr(>|z|)']
   } else {
-    1
+    # in cases where gene is not included in fitted model, return "NA" instead
+    # of "1" to avoid artificially inflating the tail of the p-value distribution
+    NA
   }
 })
 
