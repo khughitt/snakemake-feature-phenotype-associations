@@ -3,6 +3,7 @@ conda-forge::r-base
 r-doparallel
 r-arrow
 r-feather
+r-metap
 r-remotes
 r-survival
 r-tidyverse

@@ -65,7 +65,12 @@ for id_ in datasets:
                     expands[method]['covariate'].append(covariate)
 
                     # store params
-                    params[id_][covariate] = cfg['phenotypes'][pheno]['associations'][covariate]['params']
+                    covariate_cfg = cfg['phenotypes'][pheno]['associations'][covariate]
+
+                    if 'params' in covariate_cfg.keys():
+                        params[id_][covariate] = covariate_cfg['params']
+                    else:
+                        params[id_][covariate] = {}
 
 # function to determine input files associated with a set of wildcards
 def get_inputs(wildcards):
@@ -90,11 +95,33 @@ for method in xinputs:
 
     all_outputs = all_outputs + outputs
 
+# split into gene- and gene set-specific outputs
+gene_outputs = [x for x in all_outputs if "/genes/" in x]
+pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
+
 #
 # rules
 #
 rule all:
-    input: all_outputs
+    input: 
+        join(out_dir, 'summary', 'gene_scores.feather'),
+        join(out_dir, 'summary', 'gene_combined_scores.feather'),
+        join(out_dir, 'summary', 'pathway_scores.feather'),
+        join(out_dir, 'summary', 'pathway_combined_scores.feather')
+
+rule combine_pathway_level_associations:
+    input: pathway_outputs
+    output:
+        scores=join(out_dir, 'summary', 'pathway_scores.feather'),
+        combined_scores=join(out_dir, 'summary', 'pathway_combined_scores.feather')
+    script: 'src/combine_associations.R'
+
+rule combine_gene_level_associations:
+    input: gene_outputs
+    output:
+        scores=join(out_dir, 'summary', 'gene_scores.feather'),
+        combined_scores=join(out_dir, 'summary', 'gene_combined_scores.feather')
+    script: 'src/combine_associations.R'
 
 if 'logit' in xinputs:
     rule logistic_regression:
@@ -114,20 +141,21 @@ if 'survival' in xinputs:
             join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/survival.parquet')
         script: 'src/compute_survival_regression.R'
 
-if 'pearson_correlation' in xinputs:
+if 'pearson_cor' in xinputs:
     rule pearson_correlation:
         input: unpack(get_inputs)
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/pearson_correlation.parquet')
+            cor_mat=join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/pearson_cor_mat.parquet'),
+            result=join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/pearson_cor.parquet')
         script: 'src/compute_pearson_correlation.py'
 
-if 'spearman_correlation' in xinputs:
+if 'spearman_cor' in xinputs:
     rule spearman_correlation:
         input: unpack(get_inputs)
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/spearman_correlation.parquet')
+            join(out_dir, '{dataset}/{feature_level}/{feature_type}/{phenotype}/{covariate}/spearman_cor_mat.parquet')
         script: 'src/compute_spearman_correlation.R'
