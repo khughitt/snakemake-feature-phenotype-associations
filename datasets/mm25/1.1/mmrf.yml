@@ -31,32 +31,6 @@ phenotypes:
     path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_STAND_ALONE_TRTRESP.feather'
     sample_id: 'public_id'
     associations:
-      best_response:
-        method: logit
-        category: treatment
-        params:
-          field: bestresp
-      first_response:
-        method: logit
-        category: treatment
-        params:
-          field: fresp
-      best_response_bor_len_dex:
-        method: logit
-        category: treatment
-        params:
-          field: bestresp
-          filter:
-            field: trtshnm
-            values: ['Bor-Len-Dex']
-      best_response_bor_cyc_dex:
-        method: logit
-        category: treatment
-        params:
-          field: bestresp
-          filter:
-            field: trtshnm
-            values: ['Bor-Cyc-Dex']
       first_response_bor_len_dex:
         method: logit
         category: treatment

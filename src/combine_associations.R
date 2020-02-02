@@ -72,9 +72,6 @@ pvals <- data.frame(
 )
 colnames(pvals)[1] <- id_field
 
-pvals <- pvals %>%
-  arrange(sumlog_pval)
-
 # summary dataframe containing aggregated scores
 scores <- data.frame(
   pull(wts, id_field),
@@ -85,6 +82,9 @@ scores <- data.frame(
   num_missing
 )
 colnames(scores)[1] <- id_field
+
+pvals <- pvals %>%
+  arrange(sumlog_pval)
 
 scores <- scores %>%
   arrange(mean_score)

@@ -12,7 +12,7 @@ out_dir = join(config['output_dir'], config['version'])
 # load data source configs
 datasets = {}
 
-dataset_cfg_paths = glob.glob('datasets/*.yml')
+dataset_cfg_paths = glob.glob('datasets/mm25/{}/*.yml'.format(config['version']))
 
 for infile in dataset_cfg_paths:
     with open(infile, 'r') as fp:
