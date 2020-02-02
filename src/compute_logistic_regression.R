@@ -66,11 +66,8 @@ if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
 # get covariate data vector
 covariate <- factor(pull(pheno_dat, assoc_params$field))
 
-save.image('~/tmp5.rda')
-stop()
-
 # build feature-covariate logit regression models and record p-values
-pvals <- apply(feat_mat[5:10,], 1, function(x) {
+pvals <- apply(feat_mat, 1, function(x) {
   # ignore infrequent "fitted probabilities numerically 0 or 1" warnings that may arise
   # due to quasi- or perfect separation
   # mod <- suppressWarnings(glm(covariate ~ x, family = "binomial"))

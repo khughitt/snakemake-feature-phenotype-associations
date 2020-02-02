@@ -61,25 +61,35 @@ sumz_wrapper <- function(x) {
   }
 }
 
-# combine p-values across datasets and covariates
-res <- data.frame(
+# summary dataframe containing aggregated pvalues
+pvals <- data.frame(
   pull(wts, id_field),
   mean_pval   = apply(wts_mat, 1, mean, na.rm = TRUE),
   median_pval = apply(wts_mat, 1, median, na.rm = TRUE),
   min_pval    = apply(wts_mat, 1, min, na.rm = TRUE),
-  max_pval    = apply(wts_mat, 1, max, na.rm = TRUE),
   sumlog_pval = suppressWarnings(apply(wts_mat, 1, sumlog_wrapper)),
-  sumz_pval   = suppressWarnings(apply(wts_mat, 1, sumz_wrapper)),
-  mean_score   = apply(wts_mat, 1, function(x) { mean(-log10(pmax(x, 1E-20)), na.rm=TRUE) }),
-  median_score = apply(wts_mat, 1, function(x) { median(-log10(pmax(x, 1E-20)), na.rm=TRUE) }),
+  sumz_pval   = suppressWarnings(apply(wts_mat, 1, sumz_wrapper))
+)
+colnames(pvals)[1] <- id_field
+
+pvals <- pvals %>%
+  arrange(sumlog_pval)
+
+# summary dataframe containing aggregated scores
+scores <- data.frame(
+  pull(wts, id_field),
+  mean_score   = apply(wts_mat, 1, function(x) { mean(-log10(pmax(x, 1E-20)), na.rm = TRUE) }),
+  median_score = apply(wts_mat, 1, function(x) { median(-log10(pmax(x, 1E-20)), na.rm = TRUE) }),
+  max_score    = apply(wts_mat, 1, function(x) { max(-log10(pmax(x, 1E-20)), na.rm = TRUE) }),
   num_present,
   num_missing
 )
-colnames(res)[1] <- id_field
+colnames(scores)[1] <- id_field
 
-res <- res %>%
-  arrange(sumlog_pval)
+scores <- scores %>%
+  arrange(mean_score)
 
 # store results
-write_feather(wts, snakemake@output[['scores']])
-write_feather(res, snakemake@output[['combined_scores']])
+write_feather(wts, snakemake@output[['pvals_indiv']])
+write_feather(pvals, snakemake@output[['pvals']])
+write_feather(scores, snakemake@output[['scores']])

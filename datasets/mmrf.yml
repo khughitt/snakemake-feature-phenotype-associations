@@ -1,0 +1,90 @@
+#
+# MMRF CoMMpass data source
+# 
+name: MMRF
+
+features:
+  genes:
+    rna: '/data/human/mmrf-commpass/IA14/clean/rnaseq/MMRF_CoMMpass_IA14a_E74GTF_HtSeq_Gene_Counts_1_BM_symbols_nr_CPM.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/1.0/mmrf-commpass/ia14/rna/merged/msigdb/normed/median/gene_sets.parquet'
+phenotypes:
+  clinical:
+    path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_PER_PATIENT.feather'
+    associations:
+      iss_stage:
+        method: logit
+        category: disease_stage
+        params:
+          field: iss_stage
+      ecog:
+        method: logit
+        category: disease_stage
+        params:
+          field: ecog
+      mm_status:
+        method: logit
+        category: disease_stage
+        params:
+          field: mm_status
+  treatment:
+    path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_STAND_ALONE_TRTRESP.feather'
+    sample_id: 'public_id'
+    associations:
+      best_response:
+        method: logit
+        category: treatment
+        params:
+          field: bestresp
+      first_response:
+        method: logit
+        category: treatment
+        params:
+          field: fresp
+      best_response_bor_len_dex:
+        method: logit
+        category: treatment
+        params:
+          field: bestresp
+          filter:
+            field: trtshnm
+            values: ['Bor-Len-Dex']
+      best_response_bor_cyc_dex:
+        method: logit
+        category: treatment
+        params:
+          field: bestresp
+          filter:
+            field: trtshnm
+            values: ['Bor-Cyc-Dex']
+      first_response_bor_len_dex:
+        method: logit
+        category: treatment
+        params:
+          field: fresp
+          filter:
+            field: trtshnm
+            values: ['Bor-Len-Dex']
+      first_response_bor_cyc_dex:
+        method: logit
+        category: treatment
+        params:
+          field: fresp
+          filter:
+            field: trtshnm
+            values: ['Bor-Cyc-Dex']
+  survival:
+    path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_STAND_ALONE_SURVIVAL.feather'
+    associations:
+      prog_free_survival:
+        method: survival
+        category: survival
+        params:
+          time: pfscdy
+          event: censpfs
+      overall_survival:
+        method: survival
+        category: survival
+        params:
+          time: oscdy
+          event: censos

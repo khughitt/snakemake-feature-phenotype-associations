@@ -7,17 +7,19 @@ features:
   genes:
     rna: '/data/human/geo/GSE106218/processed/GSE106218_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/fmap/1.0/geo/GSE106218/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/nih/mapped/1.0/geo/GSE106218/rna/merged/msigdb/normed/median/gene_sets.parquet'
 phenotypes:
   clinical_data:
     path: '/data/human/geo/GSE106218/processed/GSE106218_sample_metadata.tsv'
     associations:
       iss_stage:
         method: logit
+        category: disease_stage
         params:
           field: iss_stage
       overall_survival:
         method: survival
+        category: survival
         params:
           time: os_time
           event: os_event

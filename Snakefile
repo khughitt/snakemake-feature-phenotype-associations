@@ -1,5 +1,6 @@
 #
-# feature-phenotype association pipeline
+# Snakemake Feature Weights Pipeline
+# V. Keith Hughitt
 #
 import os
 import glob
@@ -11,7 +12,9 @@ out_dir = join(config['output_dir'], config['version'])
 # load data source configs
 datasets = {}
 
-for infile in glob.glob('datasets/*.yml'):
+dataset_cfg_paths = glob.glob('datasets/*.yml')
+
+for infile in dataset_cfg_paths:
     with open(infile, 'r') as fp:
         cfg = yaml.safe_load(fp)
         datasets[cfg['name']] = cfg
@@ -104,23 +107,36 @@ pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
 #
 rule all:
     input: 
+        join(out_dir, 'summary', 'gene_pvals_indiv.feather'),
+        join(out_dir, 'summary', 'gene_pvals.feather'),
         join(out_dir, 'summary', 'gene_scores.feather'),
-        join(out_dir, 'summary', 'gene_combined_scores.feather'),
+        join(out_dir, 'summary', 'pathway_pvals_indiv.feather'),
+        join(out_dir, 'summary', 'pathway_pvals.feather'),
         join(out_dir, 'summary', 'pathway_scores.feather'),
-        join(out_dir, 'summary', 'pathway_combined_scores.feather')
+        join(out_dir, 'summary', 'covariate_metadata.feather')
+
+rule create_covariate_metadata_table:
+    output:
+        join(out_dir, 'summary', 'covariate_metadata.feather')
+    params:
+        cfg_paths=dataset_cfg_paths
+    script:
+        "src/create_covariate_metadata_table.py"
 
 rule combine_pathway_level_associations:
     input: pathway_outputs
     output:
-        scores=join(out_dir, 'summary', 'pathway_scores.feather'),
-        combined_scores=join(out_dir, 'summary', 'pathway_combined_scores.feather')
+        pvals_indiv=join(out_dir, 'summary', 'pathway_pvals_indiv.feather'),
+        pvals=join(out_dir, 'summary', 'pathway_pvals.feather'),
+        scores=join(out_dir, 'summary', 'pathway_scores.feather')
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
     input: gene_outputs
     output:
-        scores=join(out_dir, 'summary', 'gene_scores.feather'),
-        combined_scores=join(out_dir, 'summary', 'gene_combined_scores.feather')
+        pvals_indiv=join(out_dir, 'summary', 'gene_pvals_indiv.feather'),
+        pvals=join(out_dir, 'summary', 'gene_pvals.feather'),
+        scores=join(out_dir, 'summary', 'gene_scores.feather')
     script: 'src/combine_associations.R'
 
 if 'logit' in xinputs:
