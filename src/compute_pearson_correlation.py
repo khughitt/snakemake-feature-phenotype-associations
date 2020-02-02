@@ -69,10 +69,9 @@ cor_mat = cor_mat.set_index(cor_mat.columns[0])
 
 # determine function to use to collapse correlation scores
 phenotype = snakemake.wildcards['phenotype']
-covariate = snakemake.wildcards['covariate']
 
-pheno_config = snakemake.params.config['phenotypes'][phenotype]
-assoc_params = pheno_config['associations'][covariate]['params']
+pheno_config = snakemake.params.config['phenotypes']
+assoc_params = pheno_config['associations'][phenotype]['params']
 
 collapse_func = assoc_params['collapse_func']
 

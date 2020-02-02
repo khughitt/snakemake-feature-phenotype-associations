@@ -8,12 +8,12 @@ features:
     rna: '/data/human/geo/GSE134598/processed/GSE134598_gene_expr.feather'
   gene_sets:
     rna: '/data/nih/mapped/1.0/geo/GSE134598/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
 phenotypes:
-  clinical_data:
-    path: '/data/human/geo/GSE134598/processed/GSE134598_sample_metadata.tsv'
-    associations:
-      treatment:
-        method: logit
-        category: treatment
-        params:
-          field: treatment
+  path: '/data/human/geo/GSE134598/processed/GSE134598_sample_metadata.tsv'
+  associations:
+    treatment:
+      method: logit
+      category: treatment
+      params:
+        field: treatment

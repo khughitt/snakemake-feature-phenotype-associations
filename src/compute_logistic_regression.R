@@ -10,41 +10,30 @@ source('src/utils.R')
 set.seed(1)
 
 # load feature data
-feat_dat <- load_data(snakemake@input$features)
+feat_dat <- load_data(snakemake@input$feat_infile)
 
 # get feature settings
 feat_level <- snakemake@wildcards$feature_level
 feat_type <- snakemake@wildcards$feature_type
-phenotype <- snakemake@wildcards$phenotype
-
-feat_config <- snakemake@params$config$features[[feat_level]][[feat_type]]
 
 # get phenotype settings
 phenotype <- snakemake@wildcards$phenotype
-pheno_config <- snakemake@params$config$phenotypes[[phenotype]]
-
-# association parameters
-assoc_params <- pheno_config$associations[[snakemake@wildcards$covariate]]$params
+pheno_config <- snakemake@params$config$phenotypes$associations[[phenotype]]
 
 # load phenotype data
-pheno_dat <- load_data(snakemake@input$phenotype)
+pheno_dat <- load_data(snakemake@input$pheno_infile)
 
 # determine name of sample id column
-if ('sample_id' %in% names(pheno_config)) {
-  sample_id_col <- pheno_config$sample_id
-} else {
-  # if not specified in config, default to first column
-  sample_id_col <- colnames(pheno_dat)[1]
-}
+sample_id_col <- colnames(pheno_dat)[1]
 
 # ensure that sample order is consistent between feature/pheno data
 ind <- match(colnames(feat_dat)[-1], pull(pheno_dat, sample_id_col))
 pheno_dat <- pheno_dat[ind, ]
 
 # limit to specific rows, if requested
-if ('filter' %in% names(assoc_params)) {
+if ('filter' %in% names(pheno_config$params)) {
   # determine which samples pass filter
-  mask <- pull(pheno_dat, assoc_params$filter$field) %in% assoc_params$filter$values
+  mask <- pull(pheno_dat, pheno_config$params$filter$field) %in% pheno_config$params$filter$values
 
   if (sum(mask) == 0) {
     stop("Filtering resulted in all rows being removed! Check filter settings.")
@@ -63,15 +52,15 @@ if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
   stop("Feature/phenotype sample IDs do not match!")
 }
 
-# get covariate data vector
-covariate <- factor(pull(pheno_dat, assoc_params$field))
+# get phenotype data vector
+phenotype <- factor(pull(pheno_dat, pheno_config$params$field))
 
-# build feature-covariate logit regression models and record p-values
+# build feature-phenotype logit regression models and record p-values
 pvals <- apply(feat_mat, 1, function(x) {
   # ignore infrequent "fitted probabilities numerically 0 or 1" warnings that may arise
   # due to quasi- or perfect separation
-  # mod <- suppressWarnings(glm(covariate ~ x, family = "binomial"))
-  mod <- glm(covariate ~ x, family = "binomial")
+  # mod <- suppressWarnings(glm(phenotype ~ x, family = "binomial"))
+  mod <- glm(phenotype ~ x, family = "binomial")
 
   # in some cases (e.g. when x contains mostly 0's), fit will only include an
   # intercept term, making it necessary to check the coef dimensions
@@ -96,7 +85,7 @@ res <- data.frame(feat_ids, pvals, stringsAsFactors = FALSE)
 
 # update column names; dataset id is added as a prefix to avoid collisions when
 # joining results from multiple datasets later on
-cname <- sprintf("%s_%s_pval", snakemake@wildcards$dataset, snakemake@wildcards$covariate)
+cname <- sprintf("%s_%s_pval", snakemake@wildcards$dataset, snakemake@wildcards$phenotype)
 colnames(res) <- c(feat_id_col, cname)
 
 # for microarray data which may include multiple gene symbols for a single

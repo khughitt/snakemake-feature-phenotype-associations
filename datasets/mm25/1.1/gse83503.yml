@@ -8,17 +8,17 @@ features:
     rna: '/data/human/geo/GSE83503/processed/GSE83503_gene_expr.feather'
   gene_sets:
     rna: '/data/nih/mapped/1.0/geo/GSE83503/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
 phenotypes:
-  clinical_data:
-    path: '/data/human/geo/GSE83503/processed/GSE83503_sample_metadata.tsv'
-    associations:
-      pfs_event:
-        method: logit
-        category: disease_stage
-        params:
-          field: pfs_event
-      patient_died:
-        method: logit
-        category: survival
-        params:
-          field: patient_died
+  path: '/data/human/geo/GSE83503/processed/GSE83503_sample_metadata.tsv'
+  associations:
+    pfs_event:
+      method: logit
+      category: disease_stage
+      params:
+        field: pfs_event
+    patient_died:
+      method: logit
+      category: survival
+      params:
+        field: patient_died

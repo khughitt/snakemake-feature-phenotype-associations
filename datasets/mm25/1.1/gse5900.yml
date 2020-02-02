@@ -8,12 +8,12 @@ features:
     rna: '/data/human/geo/GSE5900/processed/GSE5900_gene_expr.feather'
   gene_sets:
     rna: '/data/nih/mapped/1.0/geo/GSE5900/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
 phenotypes:
-  clinical_data:
-    path: '/data/human/geo/GSE5900/processed/GSE5900_sample_metadata.tsv'
-    associations:
-      mm_stage:
-        method: logit
-        category: disease_stage
-        params:
-          field: mm_stage
+  path: '/data/human/geo/GSE5900/processed/GSE5900_sample_metadata.tsv'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_stage

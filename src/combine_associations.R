@@ -33,7 +33,7 @@ wts <- wts_list %>%
 
 # create a matrix version of the weights without the id column
 wts_mat <- wts %>%
-  select(-id_field) %>%
+  select(-all_of(id_field)) %>%
   as.matrix()
 
 # count number of missing values for each gene or gene set

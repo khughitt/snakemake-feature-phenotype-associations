@@ -8,12 +8,12 @@ features:
     rna: '/data/human/geo/GSE31161/processed/GSE31161_gene_expr.feather'
   gene_sets:
     rna: '/data/nih/mapped/1.0/geo/GSE31161/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
 phenotypes:
-  clinical_data:
-    path: '/data/human/geo/GSE31161/processed/GSE31161_sample_metadata.tsv'
-    associations:
-      relapsed:
-        method: logit
-        category: disease_stage
-        params:
-          field: relapsed
+  path: '/data/human/geo/GSE31161/processed/GSE31161_sample_metadata.tsv'
+  associations:
+    relapsed:
+      method: logit
+      category: disease_stage
+      params:
+        field: relapsed
