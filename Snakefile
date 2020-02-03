@@ -165,4 +165,4 @@ if 'spearman_cor' in feats:
         output:
             cor_mat=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/spearman_cor_mat.parquet'),
             result=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/spearman_cor.parquet')
-        script: 'src/compute_spearman_correlation.R'
+        script: 'src/compute_spearman_correlation.py'
