@@ -99,12 +99,8 @@ pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
 #
 rule all:
     input: 
-        join(out_dir, 'summary', 'gene_pvals_indiv.feather'),
         join(out_dir, 'summary', 'gene_pvals.feather'),
-        join(out_dir, 'summary', 'gene_scores.feather'),
-        join(out_dir, 'summary', 'pathway_pvals_indiv.feather'),
         join(out_dir, 'summary', 'pathway_pvals.feather'),
-        join(out_dir, 'summary', 'pathway_scores.feather'),
         join(out_dir, 'summary', 'phenotype_metadata.feather')
 
 rule create_phenotype_metadata_table:
@@ -118,17 +114,13 @@ rule create_phenotype_metadata_table:
 rule combine_pathway_level_associations:
     input: pathway_outputs
     output:
-        pvals_indiv=join(out_dir, 'summary', 'pathway_pvals_indiv.feather'),
-        pvals=join(out_dir, 'summary', 'pathway_pvals.feather'),
-        scores=join(out_dir, 'summary', 'pathway_scores.feather')
+        join(out_dir, 'summary', 'pathway_pvals.feather')
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
     input: gene_outputs
     output:
-        pvals_indiv=join(out_dir, 'summary', 'gene_pvals_indiv.feather'),
-        pvals=join(out_dir, 'summary', 'gene_pvals.feather'),
-        scores=join(out_dir, 'summary', 'gene_scores.feather')
+        join(out_dir, 'summary', 'gene_pvals.feather')
     script: 'src/combine_associations.R'
 
 if 'logit' in feats:
