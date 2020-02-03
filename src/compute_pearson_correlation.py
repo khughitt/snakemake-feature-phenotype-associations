@@ -31,9 +31,8 @@ def corrcoeff_einsum_optimized(O, P):
     return cov / np.sqrt(tmp)
 
 # load processed feature / phenotype data
-feat_dat = load_data(snakemake.input['features'])
-
-pheno_dat = load_data(snakemake.input['phenotype'])
+feat_dat = load_data(snakemake.input['feat_infile'])
+pheno_dat = load_data(snakemake.input['pheno_infile'])
 
 # determine feature sample indices
 feat_type = snakemake.wildcards['feature_type']
@@ -58,7 +57,7 @@ pheno_mat = pheno_dat.loc[:, sample_ids].to_numpy().T
 cor_mat = corrcoeff_einsum_optimized(feat_mat, pheno_mat)
 
 # convert back to a dataframe and add row/column identifiers
-cor_mat = pd.DataFrame(cor_mat.T, columns=pheno_dat.drug)
+cor_mat = pd.DataFrame(cor_mat.T, columns=pheno_dat.iloc[:, 0])
 cor_mat.insert(0, feat_key, feat_dat[feat_key])
 
 # store correlation matrix

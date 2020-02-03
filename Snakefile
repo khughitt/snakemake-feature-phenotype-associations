@@ -7,12 +7,18 @@ import glob
 import yaml
 from os.path import join
 
-out_dir = join(config['output_dir'], config['version'])
+datasets: 'datasets/pharmacogx/1.0'
+output_dir: '/data/nih/fassoc/pharmacogx'
+
+# directories
+out_dir = join(config['output_dir'], config['name'], config['version'])
+data_cfg_dir = join('datasets', config['name'], config['version'])
 
 # load data source configs
 datasets = {}
 
-dataset_cfg_paths = glob.glob('datasets/mm25/{}/*.yml'.format(config['version']))
+
+dataset_cfg_paths = glob.glob(os.path.join(data_cfg_dir, '*.yml'))
 
 for infile in dataset_cfg_paths:
     with open(infile, 'r') as fp:
@@ -99,8 +105,8 @@ pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
 #
 rule all:
     input: 
-        join(out_dir, 'summary', 'gene_pvals.feather'),
-        join(out_dir, 'summary', 'pathway_pvals.feather'),
+        join(out_dir, 'summary', 'genes.feather'),
+        join(out_dir, 'summary', 'pathways.feather'),
         join(out_dir, 'summary', 'phenotype_metadata.feather')
 
 rule create_phenotype_metadata_table:
@@ -114,13 +120,13 @@ rule create_phenotype_metadata_table:
 rule combine_pathway_level_associations:
     input: pathway_outputs
     output:
-        join(out_dir, 'summary', 'pathway_pvals.feather')
+        join(out_dir, 'summary', 'pathways.feather')
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
     input: gene_outputs
     output:
-        join(out_dir, 'summary', 'gene_pvals.feather')
+        join(out_dir, 'summary', 'genes.feather')
     script: 'src/combine_associations.R'
 
 if 'logit' in feats:
