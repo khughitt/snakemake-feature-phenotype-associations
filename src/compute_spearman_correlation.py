@@ -124,8 +124,11 @@ collapse_func = assoc_params['collapse_func']
 # collapse correlations along features using specified aggregation function
 res = cor_mat.apply(eval(collapse_func), axis=1)
 
+# create result data frame and update column name
 res = pd.DataFrame(res)
-res.columns = ['spearman_cor_' + collapse_func]
+
+cname = "_".join([snakemake.wildcards['dataset'], snakemake.wildcards['phenotype'], "cor"])
+res.columns = [cname]
 
 # convert index to a column
 res = res.reset_index()

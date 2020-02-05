@@ -9,6 +9,7 @@ r-survival
 r-tidyverse
 lz4
 pyarrow
+numba
 numpy
 pandas
 snakemake-minimal
