@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype logit regression model
 #
-suppressMessages(library(arrow))
+suppressMessages(library(feather))
 suppressMessages(library(tidyverse))
 
 source('src/utils.R')
@@ -100,6 +100,7 @@ if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
   res <- res %>%
     separate_rows(symbol, sep = " ?//+ ?")
 }
+
 feat_ids <- pull(res, feat_id_col)
 
 pval_field <- colnames(res)[3]
@@ -127,6 +128,10 @@ pvals <- res %>%
 stats <- res %>%
   select(-ends_with('pval'))
 
+# strip "_pval" and "_stat" column names suffixes; no longer needed
+colnames(pvals) <- sub("_pval", "", colnames(pvals))
+colnames(stats) <- sub("_pval", "", colnames(stats))
+
 # store p-values and test statistics in two separate files
-arrow::write_parquet(pvals, snakemake@output[["pvals"]], compression = 'ZSTD')
-arrow::write_parquet(stats, snakemake@output[["stats"]], compression = 'ZSTD')
+write_feather(pvals, snakemake@output[["pvals"]])
+write_feather(stats, snakemake@output[["stats"]])

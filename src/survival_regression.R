@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype survival regression model
 #
-suppressMessages(library(arrow))
+suppressMessages(library(feather))
 suppressMessages(library(survival))
 suppressMessages(library(tidyverse))
 
@@ -120,6 +120,10 @@ pvals <- res %>%
 stats <- res %>%
   select(-ends_with('pval'))
 
+# strip "_pval" and "_stat" column names suffixes; no longer needed
+colnames(pvals) <- sub("_pval", "", colnames(pvals))
+colnames(stats) <- sub("_pval", "", colnames(stats))
+
 # store p-values and test statistics in two separate files
-arrow::write_parquet(pvals, snakemake@output[["pvals"]], compression = 'ZSTD')
-arrow::write_parquet(stats, snakemake@output[["stats"]], compression = 'ZSTD')
+write_feather(pvals, snakemake@output[["pvals"]])
+write_feather(stats, snakemake@output[["stats"]])

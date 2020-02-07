@@ -7,16 +7,12 @@ import glob
 import yaml
 from os.path import join
 
-datasets: 'datasets/pharmacogx/1.0'
-output_dir: '/data/nih/fassoc/pharmacogx'
-
 # directories
 out_dir = join(config['output_dir'], config['name'], config['version'])
 data_cfg_dir = join('datasets', config['name'], config['version'])
 
 # load data source configs
 datasets = {}
-
 
 dataset_cfg_paths = glob.glob(os.path.join(data_cfg_dir, '*.yml'))
 
@@ -28,8 +24,10 @@ for infile in dataset_cfg_paths:
 # dict of feature input filepaths, indexed by association function
 feats = {}
 
+# dict of snakemake rule expand components
 expands = {}
 
+# dict of parameters to be passed in to different rules
 params = {}
 
 # determine which rules calculations should be run for each dataset
@@ -82,51 +80,60 @@ def get_inputs(wildcards):
     }
 
 # expected outputs
-all_outputs = []
+output_prefixes = []
 
 for method in feats:
-    outfile = '{}.parquet'.format(method)
-
-    outputs = expand(join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}', outfile),
+    outputs = expand(join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}', method),
                      zip,
                      dataset=expands[method]['dataset'],
                      feature_level=expands[method]['feature_level'],
                      feature_type=expands[method]['feature_type'],
                      phenotype=expands[method]['phenotype'])
 
-    all_outputs = all_outputs + outputs
+    output_prefixes = output_prefixes + outputs
 
 # split into gene- and gene set-specific outputs
-gene_outputs = [x for x in all_outputs if "/genes/" in x]
-pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
+gene_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/genes/" in x]
+gene_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/genes/" in x]
+
+pathway_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
+pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
 
 #
 # rules
 #
 rule all:
     input: 
-        join(out_dir, 'merged', '{}_gene_associations.feather'.format(config['name'])),
-        join(out_dir, 'merged', '{}_pathway_associations.feather'.format(config['name'])),
-        join(out_dir, 'metadata', 'phenotype_metadata.feather')
+        join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
+        join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name'])),
+        join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
+        join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name'])),
+        join(out_dir, 'metadata', 'association_metadata.feather')
 
-rule create_phenotype_metadata_table:
+rule association_metadata:
     output:
-        join(out_dir, 'metadata', 'phenotype_metadata.feather')
+        join(out_dir, 'metadata', 'association_metadata.feather')
     params:
         cfg_paths=dataset_cfg_paths
     script:
-        "src/create_phenotype_metadata_table.py"
+        "src/association_metadata.py"
 
 rule combine_pathway_level_associations:
-    input: pathway_outputs
+    input:
+        pvals=pathway_pval_files,
+        stats=pathway_stat_files
     output:
-        join(out_dir, 'merged', '{}_pathway_associations.feather'.format(config['name']))
+        pvals=join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
+        stats=join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
-    input: gene_outputs
+    input:
+        pvals=gene_pval_files,
+        stats=gene_stat_files
     output:
-        join(out_dir, 'merged', '{}_gene_associations.feather'.format(config['name']))
+        pvals=join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
+        stats=join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 if 'logit' in feats:
@@ -135,9 +142,9 @@ if 'logit' in feats:
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit.parquet'),
-            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.parquet')
-        script: 'src/compute_logistic_regression.R'
+            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.feather'),
+            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.feather')
+        script: 'src/logistic_regression.R'
 
 if 'survival' in feats:
     rule survival_regression:
@@ -145,26 +152,7 @@ if 'survival' in feats:
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival.parquet'),
-            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.parquet')
-        script: 'src/compute_survival_regression.R'
+            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.feather'),
+            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.feather')
+        script: 'src/survival_regression.R'
 
-if 'pearson_cor' in feats:
-    rule pearson_correlation:
-        input: unpack(get_inputs)
-        params:
-            config=lambda wildcards, output: datasets[wildcards.dataset]
-        output:
-            cor_mat=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/pearson_cor_mat.parquet'),
-            result=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/pearson_cor.parquet')
-        script: 'src/compute_pearson_correlation.py'
-
-if 'spearman_cor' in feats:
-    rule spearman_correlation:
-        input: unpack(get_inputs)
-        params:
-            config=lambda wildcards, output: datasets[wildcards.dataset]
-        output:
-            cor_mat=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/spearman_cor_mat.parquet'),
-            result=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/spearman_cor.parquet')
-        script: 'src/compute_spearman_correlation.py'
