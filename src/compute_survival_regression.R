@@ -65,7 +65,11 @@ fits <- apply(feat_mat, 1, function(x) {
   suppressWarnings(summary(survival::coxph(surv ~ x)))
 })
 
-# extract cox regression p-values
+# extract wald test statistics and p-values
+test_stats <- as.numeric(unlist(lapply(fits, function(x) {
+  x$waldtest['test']
+})))
+
 pvals <- as.numeric(unlist(lapply(fits, function(x) {
   x$waldtest['pvalue']
 })))
@@ -74,12 +78,12 @@ pvals <- as.numeric(unlist(lapply(fits, function(x) {
 feat_id_col <- colnames(feat_dat)[1]
 feat_ids <- as.character(pull(feat_dat, feat_id_col))
 
-res <- data.frame(feat_ids, pvals, stringsAsFactors = FALSE)
+res <- data.frame(feat_ids, test_stats, pvals, stringsAsFactors = FALSE)
 
 # update column names; dataset id is added as a prefix to avoid collisions when
 # joining results from multiple datasets later on
-cname <- sprintf("%s_%s_pval", snakemake@wildcards$dataset, snakemake@wildcards$phenotype)
-colnames(res) <- c(feat_id_col, cname)
+col_prefix <- sprintf("%s_%s_", snakemake@wildcards$dataset, snakemake@wildcards$phenotype)
+colnames(res) <- c(feat_id_col, paste0(col_prefix, c('stat', 'pval')))
 
 # for microarray data which may include multiple gene symbols for a single
 # row (e.g. "ABC1 // ABC2 // ETC"), split each such entries into multiple
@@ -91,12 +95,14 @@ if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
 
 feat_ids <- pull(res, feat_id_col)
 
+pval_field <- colnames(res)[3]
+
 # for datasets with multi-mapped identifiers, collapse to a single row keeping
 # the small p-value
 if (length(feat_ids) != length(unique(feat_ids))) {
   res <- res %>%
     group_by_at(feat_id_col) %>%
-    summarise_all(min) %>%
+    slice(which.min(get(pval_field))) %>%
     ungroup()
 }
 
@@ -108,4 +114,12 @@ if (length(pull(res, feat_id_col)) != length(unique(pull(res, feat_id_col)))) {
 res <- res %>%
   arrange(get(feat_id_col))
 
-arrow::write_parquet(res, snakemake@output[[1]], compression = 'ZSTD')
+pvals <- res %>%
+  select(-ends_with('stat'))
+
+stats <- res %>%
+  select(-ends_with('pval'))
+
+# store p-values and test statistics in two separate files
+arrow::write_parquet(pvals, snakemake@output[["pvals"]], compression = 'ZSTD')
+arrow::write_parquet(stats, snakemake@output[["stats"]], compression = 'ZSTD')

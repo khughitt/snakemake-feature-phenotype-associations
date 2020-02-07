@@ -105,13 +105,13 @@ pathway_outputs = [x for x in all_outputs if "/gene_sets/" in x]
 #
 rule all:
     input: 
-        join(out_dir, 'summary', 'genes.feather'),
-        join(out_dir, 'summary', 'pathways.feather'),
-        join(out_dir, 'summary', 'phenotype_metadata.feather')
+        join(out_dir, 'merged', '{}_gene_associations.feather'.format(config['name'])),
+        join(out_dir, 'merged', '{}_pathway_associations.feather'.format(config['name'])),
+        join(out_dir, 'metadata', 'phenotype_metadata.feather')
 
 rule create_phenotype_metadata_table:
     output:
-        join(out_dir, 'summary', 'phenotype_metadata.feather')
+        join(out_dir, 'metadata', 'phenotype_metadata.feather')
     params:
         cfg_paths=dataset_cfg_paths
     script:
@@ -120,13 +120,13 @@ rule create_phenotype_metadata_table:
 rule combine_pathway_level_associations:
     input: pathway_outputs
     output:
-        join(out_dir, 'summary', 'pathways.feather')
+        join(out_dir, 'merged', '{}_pathway_associations.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
     input: gene_outputs
     output:
-        join(out_dir, 'summary', 'genes.feather')
+        join(out_dir, 'merged', '{}_gene_associations.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 if 'logit' in feats:
@@ -135,7 +135,8 @@ if 'logit' in feats:
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit.parquet')
+            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit.parquet'),
+            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.parquet')
         script: 'src/compute_logistic_regression.R'
 
 if 'survival' in feats:
@@ -144,7 +145,8 @@ if 'survival' in feats:
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
-            join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival.parquet')
+            pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival.parquet'),
+            stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.parquet')
         script: 'src/compute_survival_regression.R'
 
 if 'pearson_cor' in feats:
