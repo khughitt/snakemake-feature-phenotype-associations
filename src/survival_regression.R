@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype survival regression model
 #
-suppressMessages(library(feather))
+suppressMessages(library(arrow))
 suppressMessages(library(survival))
 suppressMessages(library(tidyverse))
 

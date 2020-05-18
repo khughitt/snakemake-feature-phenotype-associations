@@ -11,6 +11,6 @@ load_data <- function(infile) {
   } else if (endsWith(infile, '.parquet')) {
     feat_dat <- arrow::read_parquet(infile)
   } else if (endsWith(infile, '.feather')) {
-    feat_dat <- feather::read_feather(infile)
+    feat_dat <- arrow::read_feather(infile)
   }
 }

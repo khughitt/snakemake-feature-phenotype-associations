@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype logit regression model
 #
-suppressMessages(library(feather))
+suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
 source('src/utils.R')

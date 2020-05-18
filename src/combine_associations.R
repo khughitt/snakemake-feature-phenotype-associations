@@ -2,7 +2,7 @@
 #
 # combines feature associations from multiple sources
 #
-suppressMessages(library(feather))
+suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
 # load individual dataset associations (p-values, correlations, etc.)
