@@ -1,0 +1,19 @@
+#
+# GSE47552 data source
+# 
+name: GSE47552
+
+features:
+  genes:
+    rna: '/data/human/geo/2.0/GSE47552/processed/GSE47552_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/geo/2.0/GSE47552/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/human/geo/2.0/GSE47552/processed/GSE47552_sample_metadata.tsv'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_stage

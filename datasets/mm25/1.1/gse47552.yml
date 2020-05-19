@@ -5,12 +5,12 @@ name: GSE47552
 
 features:
   genes:
-    rna: '/data/human/geo/GSE47552/processed/GSE47552_gene_expr.feather'
+    rna: '/data/human/geo/1.0/GSE47552/processed/GSE47552_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/mapped/1.0/geo/GSE47552/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/nih/mapped/1.0/geo/1.0/GSE47552/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/geo/GSE47552/processed/GSE47552_sample_metadata.tsv'
+  path: '/data/human/geo/1.0/GSE47552/processed/GSE47552_sample_metadata.tsv'
   associations:
     mm_stage:
       method: logit

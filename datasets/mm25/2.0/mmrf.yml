@@ -1,0 +1,57 @@
+#
+# MMRF CoMMpass data source
+# 
+name: MMRF
+
+features:
+  genes:
+    rna: '/data/human/mmrf-commpass/IA14/clean/rnaseq/MMRF_CoMMpass_IA14a_E74GTF_HtSeq_Gene_Counts_1_BM_symbols_nr_CPM.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/mmrf-commpass/1.0/ia14/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
+phenotypes:
+  path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_combined_metadata.feather'
+  associations:
+    iss_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: iss_stage
+    ecog:
+      method: logit
+      category: disease_stage
+      params:
+        field: ecog
+    mm_status:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_status
+    first_response_bor_len_dex:
+      method: logit
+      category: treatment
+      params:
+        field: fresp
+        filter:
+          field: trtshnm
+          values: ['Bor-Len-Dex']
+    first_response_bor_cyc_dex:
+      method: logit
+      category: treatment
+      params:
+        field: fresp
+        filter:
+          field: trtshnm
+          values: ['Bor-Cyc-Dex']
+    prog_free_survival:
+      method: survival
+      category: survival
+      params:
+        time: pfscdy
+        event: censpfs
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: oscdy
+        event: censos

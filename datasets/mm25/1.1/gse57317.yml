@@ -5,12 +5,12 @@ name: GSE57317
 
 features:
   genes:
-    rna: '/data/human/geo/GSE57317/processed/GSE57317_gene_expr.feather'
+    rna: '/data/human/geo/1.0/GSE57317/processed/GSE57317_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/mapped/1.0/geo/GSE57317/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/nih/mapped/1.0/geo/1.0/GSE57317/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/geo/GSE57317/processed/GSE57317_sample_metadata.tsv'
+  path: '/data/human/geo/1.0/GSE57317/processed/GSE57317_sample_metadata.tsv'
   associations:
     overall_survival:
       method: survival
