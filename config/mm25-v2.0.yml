@@ -4,4 +4,7 @@
 name: 'mm25'
 version: '2.0'
 
+# number of permuted versions of the data to use for generating null distributions
+num_permutations: 100
+
 output_dir: '/data/nih/fassoc'

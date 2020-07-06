@@ -68,30 +68,31 @@ mod_results <- apply(feat_mat, 1, function(x) {
 
   # check to see if independent variant is included in fit
   if ('x' %in% rownames(coefs)) {
-    # get wald test statistic and p-value
-    coefs['x', c('z value', 'Pr(>|z|)')]
+    # get 
+    coefs['x', c('Estimate', 'z value', 'Pr(>|z|)')]
   } else {
     # in cases where gene is not included in fitted model, return "NA" instead
     # of "1" to avoid artificially inflating the tail of the p-value distribution
-    rep(NA, 2)
+    rep(NA, 3)
   }
 })
 
-# result is in the form of a 2 x <# gene> matrix with the two rows corresponding
-# to the wald test statistic and p-value.
-test_stats <- mod_results[1, ]
-pvals <- mod_results[2, ]
+# result is in the form of a 3 x <# gene> matrix with rows corresponding
+# to the coefficient, test statistic, and p-value.
+coefs <- mod_results[1, ]
+test_stats <- mod_results[2, ]
+pvals <- mod_results[3, ]
 
 # store result
 feat_id_col <- colnames(feat_dat)[1]
 feat_ids <- as.character(pull(feat_dat, feat_id_col))
 
-res <- data.frame(feat_ids, test_stats, pvals, stringsAsFactors = FALSE)
+res <- data.frame(feat_ids, coefs, test_stats, pvals, stringsAsFactors = FALSE)
 
 # update column names; dataset id is added as a prefix to avoid collisions when
 # joining results from multiple datasets later on
 col_prefix <- sprintf("%s_%s_", snakemake@wildcards$dataset, snakemake@wildcards$phenotype)
-colnames(res) <- c(feat_id_col, paste0(col_prefix, c('stat', 'pval')))
+colnames(res) <- c(feat_id_col, paste0(col_prefix, c('coef', 'stat', 'pval')))
 
 # for microarray data which may include multiple gene symbols for a single
 # row (e.g. "ABC1 // ABC2 // ETC"), split each such entries into multiple
@@ -103,7 +104,7 @@ if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
 
 feat_ids <- pull(res, feat_id_col)
 
-pval_field <- colnames(res)[3]
+pval_field <- colnames(res)[4]
 
 # for datasets with multi-mapped identifiers, collapse to a single row keeping
 # the small p-value
@@ -122,16 +123,21 @@ if (length(pull(res, feat_id_col)) != length(unique(pull(res, feat_id_col)))) {
 res <- res %>%
   arrange(get(feat_id_col))
 
+coefs <- res %>%
+  select(-ends_with('stat'), -ends_with('pval'))
+
 pvals <- res %>%
-  select(-ends_with('stat'))
+  select(-ends_with('stat'), -ends_with('coef'))
 
 stats <- res %>%
-  select(-ends_with('pval'))
+  select(-ends_with('pval'), -ends_with('coef'))
 
 # strip "_pval" and "_stat" column names suffixes; no longer needed
+colnames(coefs) <- sub("_coef", "", colnames(coefs))
 colnames(pvals) <- sub("_pval", "", colnames(pvals))
-colnames(stats) <- sub("_pval", "", colnames(stats))
+colnames(stats) <- sub("_stat", "", colnames(stats))
 
-# store p-values and test statistics in two separate files
+# store coefficients, p-values, and test statistics
+write_feather(coefs, snakemake@output[["coefs"]])
 write_feather(pvals, snakemake@output[["pvals"]])
 write_feather(stats, snakemake@output[["stats"]])

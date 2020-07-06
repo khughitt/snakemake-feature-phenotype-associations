@@ -6,8 +6,12 @@ suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
 # load individual dataset associations (p-values, correlations, etc.)
+coef_infiles <- unlist(snakemake@input[['coefs']])
 pval_infiles <- unlist(snakemake@input[['pvals']])
 stat_infiles <- unlist(snakemake@input[['stats']])
+
+coefs_list <- lapply(coef_infiles, read_feather)
+names(coefs_list) <- coef_infiles
 
 pvals_list <- lapply(pval_infiles, read_feather)
 names(pvals_list) <- pval_infiles
@@ -19,6 +23,7 @@ names(stats_list) <- stat_infiles
 num_rows <- unlist(lapply(pvals_list, nrow))
 ind <- order(-rank(num_rows, ties.method = 'first'))
 
+coefs_list <- coefs_list[ind]
 pvals_list <- pvals_list[ind]
 stats_list <- stats_list[ind]
 
@@ -36,6 +41,9 @@ if (!all(no_dups)) {
 }
 
 # combine inidividual feature-phenotype associations into a single file
+coefs_merged <- coefs_list %>%
+  reduce(left_join, by = id_field)
+
 pvals_merged <- pvals_list %>%
   reduce(left_join, by = id_field)
 
@@ -43,5 +51,6 @@ stats_merged <- stats_list %>%
   reduce(left_join, by = id_field)
 
 # store results
+write_feather(coefs_merged, snakemake@output[['coefs']])
 write_feather(pvals_merged, snakemake@output[['pvals']])
 write_feather(stats_merged, snakemake@output[['stats']])

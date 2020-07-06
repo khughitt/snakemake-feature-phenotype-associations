@@ -93,19 +93,31 @@ for method in feats:
     output_prefixes = output_prefixes + outputs
 
 # split into gene- and gene set-specific outputs
+gene_coef_files = ["{}_coefs.feather".format(x) for x in output_prefixes if "/genes/" in x]
 gene_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/genes/" in x]
 gene_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/genes/" in x]
 
+pathway_coef_files = ["{}_coefs.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
 pathway_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
 pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
+
+permuted_gene_coef_files = [x.replace('datasets/', 'permuted/') for x in gene_coef_files]
+permuted_gene_pval_files = [x.replace('datasets/', 'permuted/') for x in gene_pval_files]
+permuted_gene_stat_files = [x.replace('datasets/', 'permuted/') for x in gene_stat_files]
+
+permuted_pathway_coef_files = [x.replace('datasets/', 'permuted/') for x in pathway_coef_files]
+permuted_pathway_pval_files = [x.replace('datasets/', 'permuted/') for x in pathway_pval_files]
+permuted_pathway_stat_files = [x.replace('datasets/', 'permuted/') for x in pathway_stat_files]
 
 #
 # rules
 #
 rule all:
     input: 
+        join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
         join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
         join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name'])),
+        join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
         join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
         join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name'])),
         join(out_dir, 'metadata', 'association_metadata.feather')
@@ -120,38 +132,70 @@ rule association_metadata:
 
 rule combine_pathway_level_associations:
     input:
+        coefs=pathway_coef_files,
         pvals=pathway_pval_files,
         stats=pathway_stat_files
     output:
+        coefs=join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
         pvals=join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
         stats=join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
     input:
+        coefs=gene_coef_files,
         pvals=gene_pval_files,
         stats=gene_stat_files
     output:
+        coefs=join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
         pvals=join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
         stats=join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
+rule tmp_gen_permutations:
+    input:
+        coefs=permuted_gene_coef_files,
+        pvals=permuted_gene_pval_files,
+        stats=permuted_gene_stat_files
+
 if 'logit' in feats:
+    rule permuted_logistic_regression:
+        input: unpack(get_inputs)
+        params:
+            config=lambda wildcards, output: datasets[wildcards.dataset]
+        output:
+            coefs=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_coefs.feather'),
+            pvals=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.feather'),
+            stats=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.feather')
+        script: 'src/logistic_regression_permuted.R'
+
     rule logistic_regression:
         input: unpack(get_inputs)
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
+            coefs=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_coefs.feather'),
             pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.feather'),
             stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.feather')
         script: 'src/logistic_regression.R'
 
 if 'survival' in feats:
+    rule permuted_survival_regression:
+        input: unpack(get_inputs)
+        params:
+            config=lambda wildcards, output: datasets[wildcards.dataset]
+        output:
+            coefs=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_coefs.feather'),
+            pvals=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.feather'),
+            stats=join(out_dir, 'permuted/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.feather')
+        script: 'src/survival_regression_permuted.R'
+
     rule survival_regression:
         input: unpack(get_inputs)
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
+            coefs=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_coefs.feather'),
             pvals=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.feather'),
             stats=join(out_dir, 'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.feather')
         script: 'src/survival_regression.R'
