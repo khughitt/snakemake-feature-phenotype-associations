@@ -76,29 +76,27 @@ for (i in 1:snakemake@config$num_permutations) {
   surv <- survival::Surv(time = surv_time, event = surv_event)
 
   fits <- apply(feat_mat, 1, function(x) {
-    # in rare cases when a gene has ~0 variance, coxph may fail; in these cases we will
-    # assume non-significance
     tryCatch({
-      # hide "Loglik converged before variable  1 ; coefficient may be infinite" warnings
-      suppressWarnings(summary(survival::coxph(surv ~ x)))
+      fit <- summary(survival::coxph(surv ~ x))
+
+      # return vector with: <coef, stat, pval>
+      as.numeric(c(coef(fit)[1, 'coef'], fit$waldtest['test'], fit$waldtest['pvalue']))
     }, error = function(e) {
-      list(waldtest = list(test = 0, pvalue = 1))
+      # in rare cases when a gene has ~0 variance, coxph may fail; in these cases we will
+      # assume non-significance
+      c(0, 0, 1)
+    }, warning = function(w) {
+      # in order cases, a "Loglik converged before variable  1 ; coefficient may be
+      # infinite" warning may be encountered (also usually associated with very low
+      # variance)
+      c(0, 0, 1)
     })
   })
 
-  # extract wald test statistics and p-values
-  coefs <- as.numeric(unlist(lapply(fits, function(x) {
-    coef(x)[1, 'coef']
-  })))
-
-  # extract wald test statistics and p-values
-  test_stats <- as.numeric(unlist(lapply(fits, function(x) {
-    x$waldtest['test']
-  })))
-
-  pvals <- as.numeric(unlist(lapply(fits, function(x) {
-    x$waldtest['pvalue']
-  })))
+  # extract coefficients, wald test statistics, and p-values
+  coefs <- fits[1, ]
+  test_stats <- fits[2, ]
+  pvals <- fits[3, ]
 
   # store result
   feat_ids <- as.character(pull(feat_dat, feat_id_col))
@@ -150,9 +148,9 @@ for (i in 1:snakemake@config$num_permutations) {
 
 
   # strip "coef", "_pval", and "_stat" column names suffixes; no longer needed
-  colnames(coefs) <- sub("_coef", "", colnames(coefs))
-  colnames(pvals) <- sub("_pval", "", colnames(pvals))
-  colnames(stats) <- sub("_stat", "", colnames(stats))
+  colnames(coefs) <- sub("_coef$", "", colnames(coefs))
+  colnames(pvals) <- sub("_pval$", "", colnames(pvals))
+  colnames(stats) <- sub("_stat$", "", colnames(stats))
 
   # add permutation number as a suffix to results so that column have different names
   # when combined later
@@ -172,6 +170,6 @@ pvals <- Reduce(function(...) inner_join(..., by = feat_id_col), pvals_list)
 stats <- Reduce(function(...) inner_join(..., by = feat_id_col), stats_list)
 
 # store p-values and test statistics in two separate files
-write_feather(pvals, snakemake@output[["coefs"]])
+write_feather(coefs, snakemake@output[["coefs"]])
 write_feather(pvals, snakemake@output[["pvals"]])
 write_feather(stats, snakemake@output[["stats"]])

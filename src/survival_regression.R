@@ -60,24 +60,28 @@ surv_event <- as.logical(pull(pheno_dat, pheno_config$params$event))
 # build cox regression models and record p-values
 surv <- survival::Surv(time = surv_time, event = surv_event)
 
-fits <- apply(feat_mat, 1, function(x) {
-  # hide "Loglik converged before variable  1 ; coefficient may be infinite" warnings
-  suppressWarnings(summary(survival::coxph(surv ~ x)))
+qfits <- apply(feat_mat, 1, function(x) {
+  tryCatch({
+    fit <- summary(survival::coxph(surv ~ x))
+
+    # return vector with: <coef, stat, pval>
+    as.numeric(c(coef(fit)[1, 'coef'], fit$waldtest['test'], fit$waldtest['pvalue']))
+  }, error = function(e) {
+    # in rare cases when a gene has ~0 variance, coxph may fail; in these cases we will
+    # assume non-significance
+    c(0, 0, 1)
+  }, warning = function(w) {
+    # in order cases, a "Loglik converged before variable  1 ; coefficient may be
+    # infinite" warning may be encountered (also usually associated with very low
+    # variance)
+    c(0, 0, 1)
+  })
 })
 
 # extract coefficients, wald test statistics, and p-values
-coefs <- as.numeric(unlist(lapply(fits, function(x) {
-  coef(x)[1, 'coef']  
-})))
-
-test_stats <- as.numeric(unlist(lapply(fits, function(x) {
-  x$waldtest['test']
-})))
-
-pvals <- as.numeric(unlist(lapply(fits, function(x) {
-  x$waldtest['pvalue']
-})))
-
+coefs <- fits[1, ]
+test_stats <- fits[2, ]
+pvals <- fits[3, ]
 
 # store result
 feat_id_col <- colnames(feat_dat)[1]
@@ -129,9 +133,9 @@ stats <- res %>%
   select(-ends_with('pval'), -ends_with('coef'))
 
 # strip "_pval" and "_stat" column names suffixes; no longer needed
-colnames(coefs) <- sub("_coef", "", colnames(coefs))
-colnames(pvals) <- sub("_pval", "", colnames(pvals))
-colnames(stats) <- sub("_stat", "", colnames(stats))
+colnames(coefs) <- sub("_coef$", "", colnames(coefs))
+colnames(pvals) <- sub("_pval$", "", colnames(pvals))
+colnames(stats) <- sub("_stat$", "", colnames(stats))
 
 # store p-values and test statistics in two separate files
 write_feather(coefs, snakemake@output[["coefs"]])

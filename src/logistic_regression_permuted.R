@@ -74,21 +74,30 @@ for (i in 1:snakemake@config$num_permutations) {
     # ignore infrequent "fitted probabilities numerically 0 or 1" warnings that may arise
     # due to quasi- or perfect separation
     # mod <- suppressWarnings(glm(phenotype ~ x, family = "binomial"))
-    mod <- glm(phenotype ~ x, family = "binomial")
 
-    # in some cases (e.g. when x contains mostly 0's), fit will only include an
-    # intercept term, making it necessary to check the coef dimensions
-    coefs <- coef(summary(mod))
+    tryCatch({
+      mod <- glm(phenotype ~ x, family = "binomial")
 
-    # check to see if independent variant is included in fit
-    if ('x' %in% rownames(coefs)) {
-      # get test statistic and p-value
-      coefs['x', c('Estimate', 'z value', 'Pr(>|z|)')]
-    } else {
-      # in cases where gene is not included in fitted model, return "NA" instead
-      # of "1" to avoid artificially inflating the tail of the p-value distribution
+      # in some cases (e.g. when x contains mostly 0's), fit will only include an
+      # intercept term, making it necessary to check the coef dimensions
+      coefs <- coef(summary(mod))
+
+
+      # check to see if independent variant is included in fit
+      if ('x' %in% rownames(coefs)) {
+        # get 
+        coefs['x', c('Estimate', 'z value', 'Pr(>|z|)')]
+      } else {
+        # in cases where gene is not included in fitted model, return "NA" instead
+        # of "1" to avoid artificially inflating the tail of the p-value distribution
+        rep(NA, 3)
+      }
+    }, warning = function(w) {
+      # "fitted probabilities numerically 0 or 1", due to quasi- or perfect separation;
+      # treat as missing since results are unreliable;
+      # happens very rarely
       rep(NA, 3)
-    }
+    })
   })
 
   # result is in the form of a 2 x <# gene> matrix with the two rows corresponding
@@ -146,9 +155,9 @@ for (i in 1:snakemake@config$num_permutations) {
     select(-ends_with('pval'), -ends_with('coef'))
 
   # strip "_pval" and "_stat" column names suffixes; no longer needed
-  colnames(coefs) <- sub("_coef", "", colnames(coefs))
-  colnames(pvals) <- sub("_pval", "", colnames(pvals))
-  colnames(stats) <- sub("_stat", "", colnames(stats))
+  colnames(coefs) <- sub("_coef$", "", colnames(coefs))
+  colnames(pvals) <- sub("_pval$", "", colnames(pvals))
+  colnames(stats) <- sub("_stat$", "", colnames(stats))
 
   # add permutation number as a suffix to results so that column have different names
   # when combined later

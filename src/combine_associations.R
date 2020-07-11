@@ -50,6 +50,13 @@ pvals_merged <- pvals_list %>%
 stats_merged <- stats_list %>%
   reduce(left_join, by = id_field)
 
+# normalize column order
+ind <- c(id_field, sort(colnames(coefs_merged)[-1]))
+
+coefs_merged <- coefs_merged[, ind]
+pvals_merged <- pvals_merged[, ind]
+stats_merged <- stats_merged[, ind]
+
 # store results
 write_feather(coefs_merged, snakemake@output[['coefs']])
 write_feather(pvals_merged, snakemake@output[['pvals']])
