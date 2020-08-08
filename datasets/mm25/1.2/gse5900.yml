@@ -1,0 +1,19 @@
+#
+# GSE5900 data source
+# 
+name: GSE5900
+
+features:
+  genes:
+    rna: '/data/human/geo/1.0/GSE5900/processed/GSE5900_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/geo/1.0/GSE5900/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
+phenotypes:
+  path: '/data/human/geo/1.0/GSE5900/processed/GSE5900_sample_metadata.tsv'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_stage

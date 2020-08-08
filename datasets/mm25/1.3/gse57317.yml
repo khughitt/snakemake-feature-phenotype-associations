@@ -1,0 +1,20 @@
+#
+# GSE57317 data source
+# 
+name: GSE57317
+
+features:
+  genes:
+    rna: '/data/human/geo/1.1/GSE57317/processed/GSE57317_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/geo/1.1/GSE57317/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/human/geo/1.1/GSE57317/processed/GSE57317_sample_metadata.tsv'
+  associations:
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: os_event

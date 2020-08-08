@@ -1,0 +1,7 @@
+#
+# MM25 Feature-phenotype association pipeline config
+#
+name: 'mm25'
+version: '1.1'
+
+output_dir: '/data/nih/fassoc'

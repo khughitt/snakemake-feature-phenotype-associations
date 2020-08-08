@@ -1,0 +1,19 @@
+#
+# GSE6691 data source
+# 
+name: GSE6691
+
+features:
+  genes:
+    rna: '/data/human/geo/1.0/GSE6691/processed/GSE6691_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/1.0/geo/1.0/GSE6691/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
+phenotypes:
+  path: '/data/human/geo/1.0/GSE6691/processed/GSE6691_sample_metadata.tsv'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_stage

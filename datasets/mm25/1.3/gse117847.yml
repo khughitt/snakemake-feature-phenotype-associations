@@ -1,0 +1,19 @@
+#
+# GSE117847 data source
+# 
+name: GSE117847
+
+features:
+  genes:
+    rna: '/data/human/geo/1.1/GSE117847/processed/GSE117847_gene_expr.feather'
+  gene_sets:
+    rna: '/data/nih/mapped/geo/1.1/GSE117847/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/human/geo/1.1/GSE117847/processed/GSE117847_sample_metadata.tsv'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: mm_stage
