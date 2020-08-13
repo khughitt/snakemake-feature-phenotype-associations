@@ -28,7 +28,13 @@ pheno_dat <- load_data(snakemake@input$pheno_infile)
 sample_id_col <- colnames(pheno_dat)[1]
 
 # ensure that sample order is consistent between feature/pheno data
-ind <- match(colnames(feat_dat)[-1], pull(pheno_dat, sample_id_col))
+sample_ids <- pull(pheno_dat, sample_id_col)
+
+if (!all(colnames(feat_dat)[-1] %in% sample_ids)) {
+  stop("Sample ID mismatch! Check to make sure first column in metadata matches colnames in expression data.")
+}
+
+ind <- match(colnames(feat_dat)[-1], sample_ids)
 pheno_dat <- pheno_dat[ind, ]
 
 # limit to specific rows, if requested
@@ -46,6 +52,8 @@ if ('filter' %in% names(pheno_config$params)) {
   feat_dat <- feat_dat[, c(TRUE, mask)]
 }
 
+save.image(sprintf('/tmp/%s_%s_surv.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
+
 if (!all(colnames(feat_dat)[-1] == pull(pheno_dat, sample_id_col))) {
   stop("Feature/phenotype sample IDs do not match!")
 }
@@ -60,7 +68,7 @@ surv_event <- as.logical(pull(pheno_dat, pheno_config$params$event))
 # build cox regression models and record p-values
 surv <- survival::Surv(time = surv_time, event = surv_event)
 
-qfits <- apply(feat_mat, 1, function(x) {
+fits <- apply(feat_mat, 1, function(x) {
   tryCatch({
     fit <- summary(survival::coxph(surv ~ x))
 
