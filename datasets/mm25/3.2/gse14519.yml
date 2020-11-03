@@ -1,0 +1,19 @@
+#
+# GSE14519 data source
+# 
+name: GSE14519
+
+features:
+  genes:
+    rna: '/data/clean/geo/3.1/GSE14519/GSE14519_gene_expr.feather'
+  gene_sets:
+    rna: '/data/fmap/archive/v2/geo/3.2/GSE14519/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/clean/geo/3.1/GSE14519/GSE14519_sample_metadata.tsv'
+  associations:
+    treatment:
+      method: logit
+      category: treatment
+      params:
+        field: treatment

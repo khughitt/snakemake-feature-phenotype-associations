@@ -5,12 +5,12 @@ name: GSE106218
 
 features:
   genes:
-    rna: '/data/human/geo/1.0/GSE106218/processed/GSE106218_gene_expr.feather'
+    rna: '/data/clean/geo/1.0/GSE106218/GSE106218_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/mapped/geo/1.0/GSE106218/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/fmap/archive/v2/geo/1.0/GSE106218/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/geo/1.0/GSE106218/processed/GSE106218_sample_metadata.tsv'
+  path: '/data/clean/geo/1.0/GSE106218/GSE106218_sample_metadata.tsv'
   associations:
     iss_stage:
       method: logit

@@ -29,6 +29,8 @@ sample_id_col <- colnames(pheno_dat)[1]
 # ensure that sample order is consistent between feature/pheno data
 sample_ids <- pull(pheno_dat, sample_id_col)
 
+save.image(sprintf('/tmp/%s_%s_log.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
+
 if (!all(colnames(feat_dat)[-1] %in% sample_ids)) {
   stop("Sample ID mismatch! Check to make sure first column in metadata matches colnames in expression data.")
 }
@@ -53,8 +55,6 @@ if ('filter' %in% names(pheno_config$params)) {
 
 # create a version of the feature data without the id columns, for convenience
 feat_mat <- as.matrix(feat_dat[, -1])
-
-save.image(sprintf('/tmp/%s_%s_log.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
 
 if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
   stop("Feature/phenotype sample IDs do not match!")

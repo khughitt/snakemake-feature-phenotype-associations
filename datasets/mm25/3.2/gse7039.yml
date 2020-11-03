@@ -1,0 +1,20 @@
+#
+# GSE7039 data source
+# 
+name: GSE7039
+
+features:
+  genes:
+    rna: '/data/clean/geo/3.1/GSE7039/GSE7039_gene_expr.feather'
+  gene_sets:
+    rna: '/data/fmap/archive/v2/geo/3.2/GSE7039/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/clean/geo/3.1/GSE7039/GSE7039_sample_metadata.tsv'
+  associations:
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: patient_died

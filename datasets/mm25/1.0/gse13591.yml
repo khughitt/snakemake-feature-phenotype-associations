@@ -5,12 +5,12 @@ name: GSE13591
 
 features:
   genes:
-    rna: '/data/human/geo/1.0/GSE13591/processed/GSE13591_gene_expr.feather'
+    rna: '/data/clean/geo/1.0/GSE13591/GSE13591_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/mapped/1.0/geo/1.0/GSE13591/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/fmap/1.0/geo/1.0/GSE13591/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/geo/1.0/GSE13591/processed/GSE13591_sample_metadata.tsv'
+  path: '/data/clean/geo/1.0/GSE13591/GSE13591_sample_metadata.tsv'
   associations:
     mm_stage:
       method: logit

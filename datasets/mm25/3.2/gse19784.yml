@@ -1,0 +1,31 @@
+#
+# GSE19784 data source
+# 
+name: GSE19784
+
+features:
+  genes:
+    rna: '/data/clean/geo/3.1/GSE19784/GSE19784_gene_expr.feather'
+  gene_sets:
+    rna: '/data/fmap/archive/v2/geo/3.2/GSE19784/rna/merged/msigdb/normed/median/gene_sets.feather'
+
+phenotypes:
+  path: '/data/clean/geo/3.1/GSE19784/GSE19784_sample_metadata.tsv'
+  associations:
+    iss_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: iss_stage
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: os_event
+    prog_free_survival:
+      method: survival
+      category: survival
+      params:
+        time: pfs_time
+        event: pfs_event

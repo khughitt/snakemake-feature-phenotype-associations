@@ -5,12 +5,12 @@ name: MMRF
 
 features:
   genes:
-    rna: '/data/human/mmrf-commpass/IA14/clean/rnaseq/MMRF_CoMMpass_IA14a_E74GTF_HtSeq_Gene_Counts_1_BM_symbols_nr_CPM.feather'
+    rna: '/data/clean/mmrf/IA14/rnaseq/MMRF_CoMMpass_IA14a_E74GTF_HtSeq_Gene_Counts_1_BM_symbols_nr_CPM.feather'
   gene_sets:
-    rna: '/data/nih/mapped/1.0/mmrf-commpass/ia14/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/fmap/1.0/mmrf/ia14/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/mmrf-commpass/IA14/clean/clinical_data_tables/MMRF_CoMMpass_IA14_combined_metadata.feather'
+  path: '/data/clean/mmrf/IA14/clinical_data_tables/MMRF_CoMMpass_IA14_combined_metadata.feather'
   associations:
     iss_stage:
       method: logit

@@ -5,12 +5,12 @@ name: GSE6477
 
 features:
   genes:
-    rna: '/data/human/geo/1.0/GSE6477/processed/GSE6477_gene_expr.feather'
+    rna: '/data/clean/geo/1.0/GSE6477/GSE6477_gene_expr.feather'
   gene_sets:
-    rna: '/data/nih/mapped/1.0/geo/1.0/GSE6477/rna/merged/msigdb/normed/median/gene_sets.parquet'
+    rna: '/data/fmap/1.0/geo/1.0/GSE6477/rna/merged/msigdb/normed/median/gene_sets.parquet'
 
 phenotypes:
-  path: '/data/human/geo/1.0/GSE6477/processed/GSE6477_sample_metadata.tsv'
+  path: '/data/clean/geo/1.0/GSE6477/GSE6477_sample_metadata.tsv'
   associations:
     mm_stage:
       method: logit
