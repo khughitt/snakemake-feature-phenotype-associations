@@ -2,7 +2,7 @@
 #
 # combines feature associations from multiple sources
 #
-suppressMessages(library(arrow))
+#suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
 # load individual dataset associations (p-values, correlations, etc.)
@@ -10,13 +10,13 @@ coef_infiles <- unlist(snakemake@input[['coefs']])
 pval_infiles <- unlist(snakemake@input[['pvals']])
 stat_infiles <- unlist(snakemake@input[['stats']])
 
-coefs_list <- lapply(coef_infiles, read_feather)
+coefs_list <- lapply(coef_infiles, read_csv)
 names(coefs_list) <- coef_infiles
 
-pvals_list <- lapply(pval_infiles, read_feather)
+pvals_list <- lapply(pval_infiles, read_csv)
 names(pvals_list) <- pval_infiles
 
-stats_list <- lapply(stat_infiles, read_feather)
+stats_list <- lapply(stat_infiles, read_csv)
 names(stats_list) <- stat_infiles
 
 # reorder associations list so that the entry with the most rows appears first
@@ -58,6 +58,6 @@ pvals_merged <- pvals_merged[, ind]
 stats_merged <- stats_merged[, ind]
 
 # store results
-write_feather(coefs_merged, snakemake@output[['coefs']])
-write_feather(pvals_merged, snakemake@output[['pvals']])
-write_feather(stats_merged, snakemake@output[['stats']])
+write_csv(coefs_merged, snakemake@output[['coefs']])
+write_csv(pvals_merged, snakemake@output[['pvals']])
+write_csv(stats_merged, snakemake@output[['stats']])

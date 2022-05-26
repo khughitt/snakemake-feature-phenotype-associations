@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype logit regression model
 #
-suppressMessages(library(arrow))
+#suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
 source('src/utils.R')
@@ -155,6 +155,6 @@ colnames(pvals) <- sub("_pval$", "", colnames(pvals))
 colnames(stats) <- sub("_stat$", "", colnames(stats))
 
 # store coefficients, p-values, and test statistics
-write_feather(coefs, snakemake@output[["coefs"]])
-write_feather(pvals, snakemake@output[["pvals"]])
-write_feather(stats, snakemake@output[["stats"]])
+write_csv(coefs, snakemake@output[["coefs"]])
+write_csv(pvals, snakemake@output[["pvals"]])
+write_csv(stats, snakemake@output[["stats"]])

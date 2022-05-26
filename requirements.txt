@@ -1,5 +1,5 @@
-conda-forge::python>=3.7
-conda-forge::r-base
+conda-forge::python>=3.9
+r-base
 r-doparallel
 r-arrow
 r-metap
