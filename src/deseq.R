@@ -1,10 +1,9 @@
 #!/bin/env Rscript
 #
-# Compute feature-phenotype survival regression model
+# Compute feature-phenotype differential expression
 #
-#suppressMessages(library(arrow))
-suppressMessages(library(survival))
 suppressMessages(library(tidyverse))
+suppressMessages(library(DESeq2))
 
 source('src/utils.R')
 
@@ -35,6 +34,9 @@ sample_id_col <- colnames(pheno_dat)[1]
 # ensure that sample order is consistent between feature/pheno data
 sample_ids <- pull(pheno_dat, sample_id_col)
 
+# debugging..
+save.image(sprintf('/tmp/%s_%s_log.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
+
 if (!all(colnames(feat_dat)[-1] %in% sample_ids)) {
   stop("Sample ID mismatch! Check to make sure first column in metadata matches colnames in expression data.")
 }
@@ -57,44 +59,31 @@ if ('filter' %in% names(pheno_config$params)) {
   feat_dat <- feat_dat[, c(TRUE, mask)]
 }
 
-save.image(sprintf('/tmp/%s_%s_surv.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
-
-if (!all(colnames(feat_dat)[-1] == pull(pheno_dat, sample_id_col))) {
-  stop("Feature/phenotype sample IDs do not match!")
-}
-
 # create a version of the feature data without the id columns, for convenience
 feat_mat <- as.matrix(feat_dat[, -1])
 
-# get survival time and event data
-surv_time <- as.numeric(pull(pheno_dat, pheno_config$params$time))
-surv_event <- as.logical(pull(pheno_dat, pheno_config$params$event))
+# DESeq usually expected unprocessed counts; rounding here to allow pre-processed
+# counts to be used..
+feat_mat <- round(feat_mat)
 
-# build cox regression models and record p-values
-surv <- survival::Surv(time = surv_time, event = surv_event)
+if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
+  stop("Feature/phenotype sample IDs do not match!")
+}
 
-fits <- apply(feat_mat, 1, function(x) {
-  tryCatch({
-    fit <- summary(survival::coxph(surv ~ x))
+#####################
 
-    # return vector with: <coef, stat, pval>
-    as.numeric(c(coef(fit)[1, 'coef'], fit$waldtest['test'], fit$waldtest['pvalue']))
-  }, error = function(e) {
-    # in rare cases when a gene has ~0 variance, coxph may fail; in these cases we will
-    # assume non-significance
-    c(0, 0, 1)
-  }, warning = function(w) {
-    # in order cases, a "Loglik converged before variable  1 ; coefficient may be
-    # infinite" warning may be encountered (also usually associated with very low
-    # variance)
-    c(0, 0, 1)
-  })
-})
+# fit DESeq2 model
+dds <- DESeqDataSetFromMatrix(countData = feat_mat,
+                              colData = pheno_dat,
+                              design= formula(pheno_config$design$full))
 
-# extract coefficients, wald test statistics, and p-values
-coefs <- fits[1, ]
-test_stats <- fits[2, ]
-pvals <- fits[3, ]
+dds <- DESeq(dds, test="LRT", reduced=formula(pheno_config$design$reduced))
+
+deseqResult <- results(dds)
+
+coefs <- deseqResult$log2FoldChange
+test_stats <- deseqResult$stat
+pvals <- deseqResult$pvalue
 
 # store result
 feat_id_col <- colnames(feat_dat)[1]
@@ -117,10 +106,10 @@ if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
 
 feat_ids <- pull(res, feat_id_col)
 
-pval_field <- colnames(res)[3]
+pval_field <- colnames(res)[4]
 
 # for datasets with multi-mapped identifiers, collapse to a single row keeping
-# the small p-value
+# the smallest p-value
 if (length(feat_ids) != length(unique(feat_ids))) {
   res <- res %>%
     group_by_at(feat_id_col) %>%
@@ -150,7 +139,7 @@ colnames(coefs) <- sub("_coef$", "", colnames(coefs))
 colnames(pvals) <- sub("_pval$", "", colnames(pvals))
 colnames(stats) <- sub("_stat$", "", colnames(stats))
 
-# store p-values and test statistics in two separate files
+# store coefficients, p-values, and test statistics
 write_csv(coefs, snakemake@output[["coefs"]])
 write_csv(pvals, snakemake@output[["pvals"]])
 write_csv(stats, snakemake@output[["stats"]])

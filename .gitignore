@@ -1,3 +1,4 @@
 .snakemake
+.RData
 *.bak
 __pycache__

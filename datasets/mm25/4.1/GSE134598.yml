@@ -1,0 +1,19 @@
+#
+# GSE134598 data source
+# 
+name: GSE134598
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE134598/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE134598/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE134598/column-metadata.csv'
+  associations:
+    treatment:
+      method: logit
+      category: treatment
+      params:
+        field: treatment

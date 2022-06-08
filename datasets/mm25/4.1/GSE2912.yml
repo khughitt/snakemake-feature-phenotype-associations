@@ -1,0 +1,19 @@
+#
+# GSE2912 data source
+# 
+name: GSE2912
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE2912/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE2912/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE2912/column-metadata.csv'
+  associations:
+    disease_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: clinical_staging

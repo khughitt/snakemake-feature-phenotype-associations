@@ -1,0 +1,31 @@
+#
+# GSE9782 data source
+# 
+name: GSE9782
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE9782/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE9782/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE9782/column-metadata.csv'
+  associations:
+    treatment_response:
+      method: logit
+      category: treatment
+      params:
+        field: treatment_response
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: patient_died
+    prog_free_survival:
+      method: survival
+      category: survival
+      params:
+        time: pfs_time
+        event: pfs_event

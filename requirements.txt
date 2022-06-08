@@ -5,6 +5,7 @@ r-arrow
 r-metap
 r-remotes
 r-survival
+bioconductor-deseq2
 r-tidyverse
 lz4
 pyarrow

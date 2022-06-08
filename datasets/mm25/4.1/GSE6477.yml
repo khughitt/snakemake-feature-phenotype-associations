@@ -1,0 +1,19 @@
+#
+# GSE6477 data source
+# 
+name: GSE6477
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE6477/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE6477/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE6477/column-metadata.csv'
+  associations:
+    disease_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: disease_stage

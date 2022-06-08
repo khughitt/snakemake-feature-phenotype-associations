@@ -1,0 +1,20 @@
+#
+# GSE178340 data source
+# 
+name: GSE178340
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE178340/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE178340/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE178340/column-metadata.csv'
+  associations:
+    treatment:
+      method: deseq
+      category: treatment
+      design:
+        full: "~treatment + replicate"
+        reduced: "~replicate"

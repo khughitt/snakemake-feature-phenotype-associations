@@ -12,6 +12,11 @@ set.seed(1)
 # load feature data
 feat_dat <- load_data(snakemake@input$feat_infile)
 
+# tmp / sanity check...
+if (sum(is.na(feat_dat)) > 0) {
+  stop("missing values!")
+}
+
 # get feature settings
 feat_level <- snakemake@wildcards$feature_level
 feat_type <- snakemake@wildcards$feature_type
@@ -29,6 +34,7 @@ sample_id_col <- colnames(pheno_dat)[1]
 # ensure that sample order is consistent between feature/pheno data
 sample_ids <- pull(pheno_dat, sample_id_col)
 
+# debugging..
 save.image(sprintf('/tmp/%s_%s_log.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
 
 if (!all(colnames(feat_dat)[-1] %in% sample_ids)) {

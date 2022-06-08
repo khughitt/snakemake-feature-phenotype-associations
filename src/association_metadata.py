@@ -41,5 +41,4 @@ for infile in snakemake.params['cfg_paths']:
                 
 df = pd.DataFrame(entries)
 
-df.to_csv(snakemake.output[0])
-
+df.to_csv(snakemake.output[0], index=False)

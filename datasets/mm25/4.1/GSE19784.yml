@@ -1,0 +1,31 @@
+#
+# GSE19784 data source
+# 
+name: GSE19784
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.1/geo/final/GSE19784/data.csv'
+  gene_sets:
+    rna: '/data/proj/mm25/4.1/fmap/GSE19784/median/data.csv'
+
+phenotypes:
+  path: '/data/proj/mm25/4.1/geo/final/GSE19784/column-metadata.csv'
+  associations:
+    iss_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: iss_stage
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: os_event
+    prog_free_survival:
+      method: survival
+      category: survival
+      params:
+        time: pfs_time
+        event: pfs_event

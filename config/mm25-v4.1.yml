@@ -2,9 +2,9 @@
 # MM25 Feature-phenotype association pipeline config
 #
 name: 'mm25'
-version: '2.0'
+version: '4.1'
 
 # number of permuted versions of the data to use for generating null distributions
-num_permutations: 100
+num_permutations: 1000
 
-output_dir: '/data/nih/fassoc'
+output_dir: '/data/proj/mm25/4.1/fassoc'
