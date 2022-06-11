@@ -119,7 +119,7 @@ rule association_metadata:
     params:
         cfg_paths=dataset_cfg_paths
     script:
-        "src/association_metadata.py"
+        "scripts/association_metadata.py"
 
 rule combine_pathway_level_associations:
     input:
@@ -130,7 +130,7 @@ rule combine_pathway_level_associations:
         coefs=os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
         pvals=os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
         stats=os.path.join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name']))
-    script: 'src/combine_associations.R'
+    script: 'scripts/combine_associations.R'
 
 rule combine_gene_level_associations:
     input:
@@ -141,7 +141,7 @@ rule combine_gene_level_associations:
         coefs=os.path.join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
         pvals=os.path.join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
         stats=os.path.join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name']))
-    script: 'src/combine_associations.R'
+    script: 'scripts/combine_associations.R'
 
 if 'logit' in feats:
     rule logistic_regression:
@@ -155,7 +155,7 @@ if 'logit' in feats:
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.feather'),
             stats=os.path.join(out_dir,
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.feather')
-        script: 'src/logistic_regression.R'
+        script: 'scripts/logistic_regression.R'
 
 if 'deseq' in feats:
     rule deseq:
@@ -169,7 +169,7 @@ if 'deseq' in feats:
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_pvals.feather'),
             stats=os.path.join(out_dir,
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_stats.feather')
-        script: 'src/deseq.R'
+        script: 'scripts/deseq.R'
 
 if 'survival' in feats:
     rule survival_regression:
@@ -183,4 +183,4 @@ if 'survival' in feats:
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.feather'),
             stats=os.path.join(out_dir,
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.feather')
-        script: 'src/survival_regression.R'
+        script: 'scripts/survival_regression.R'
