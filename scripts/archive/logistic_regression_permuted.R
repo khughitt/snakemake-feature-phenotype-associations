@@ -5,7 +5,7 @@
 #suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 
-source('src/utils.R')
+source('scripts/utils.R')
 
 set.seed(1)
 

@@ -6,7 +6,7 @@ suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 suppressMessages(library(DESeq2))
 
-source('src/utils.R')
+source('scripts/utils.R')
 
 set.seed(1)
 
