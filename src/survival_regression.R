@@ -2,7 +2,7 @@
 #
 # Compute feature-phenotype survival regression model
 #
-#suppressMessages(library(arrow))
+suppressMessages(library(arrow))
 suppressMessages(library(survival))
 suppressMessages(library(tidyverse))
 
@@ -151,6 +151,6 @@ colnames(pvals) <- sub("_pval$", "", colnames(pvals))
 colnames(stats) <- sub("_stat$", "", colnames(stats))
 
 # store p-values and test statistics in two separate files
-write_csv(coefs, snakemake@output[["coefs"]])
-write_csv(pvals, snakemake@output[["pvals"]])
-write_csv(stats, snakemake@output[["stats"]])
+write_feather(coefs, snakemake@output[["coefs"]])
+write_feather(pvals, snakemake@output[["pvals"]])
+write_feather(stats, snakemake@output[["stats"]])

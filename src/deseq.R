@@ -2,6 +2,7 @@
 #
 # Compute feature-phenotype differential expression
 #
+suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 suppressMessages(library(DESeq2))
 
@@ -140,6 +141,6 @@ colnames(pvals) <- sub("_pval$", "", colnames(pvals))
 colnames(stats) <- sub("_stat$", "", colnames(stats))
 
 # store coefficients, p-values, and test statistics
-write_csv(coefs, snakemake@output[["coefs"]])
-write_csv(pvals, snakemake@output[["pvals"]])
-write_csv(stats, snakemake@output[["stats"]])
+write_feather(coefs, snakemake@output[["coefs"]])
+write_feather(pvals, snakemake@output[["pvals"]])
+write_feather(stats, snakemake@output[["stats"]])

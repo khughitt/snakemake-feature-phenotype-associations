@@ -92,30 +92,30 @@ for method in feats:
     output_prefixes = output_prefixes + outputs
 
 # split into gene- and pathway-specific outputs
-gene_coef_files = ["{}_coefs.csv".format(x) for x in output_prefixes if "/genes/" in x]
-gene_pval_files = ["{}_pvals.csv".format(x) for x in output_prefixes if "/genes/" in x]
-gene_stat_files = ["{}_stats.csv".format(x) for x in output_prefixes if "/genes/" in x]
+gene_coef_files = ["{}_coefs.feather".format(x) for x in output_prefixes if "/genes/" in x]
+gene_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/genes/" in x]
+gene_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/genes/" in x]
 
-pathway_coef_files = ["{}_coefs.csv".format(x) for x in output_prefixes if "/gene_sets/" in x]
-pathway_pval_files = ["{}_pvals.csv".format(x) for x in output_prefixes if "/gene_sets/" in x]
-pathway_stat_files = ["{}_stats.csv".format(x) for x in output_prefixes if "/gene_sets/" in x]
+pathway_coef_files = ["{}_coefs.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
+pathway_pval_files = ["{}_pvals.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
+pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "/gene_sets/" in x]
 
 #
 # rules
 #
 rule all:
     input: 
-        os.path.join(out_dir, 'merged', '{}_gene_association_coefs.csv'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_gene_association_pvals.csv'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_gene_association_stats.csv'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.csv'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.csv'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_stats.csv'.format(config['name'])),
-        os.path.join(out_dir, 'metadata', 'association_metadata.csv')
+        os.path.join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name'])),
+        os.path.join(out_dir, 'metadata', 'association_metadata.feather')
 
 rule association_metadata:
     output:
-        os.path.join(out_dir, 'metadata', 'association_metadata.csv')
+        os.path.join(out_dir, 'metadata', 'association_metadata.feather')
     params:
         cfg_paths=dataset_cfg_paths
     script:
@@ -127,9 +127,9 @@ rule combine_pathway_level_associations:
         pvals=pathway_pval_files,
         stats=pathway_stat_files
     output:
-        coefs=os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.csv'.format(config['name'])),
-        pvals=os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.csv'.format(config['name'])),
-        stats=os.path.join(out_dir, 'merged', '{}_pathway_association_stats.csv'.format(config['name']))
+        coefs=os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
+        pvals=os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
+        stats=os.path.join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 rule combine_gene_level_associations:
@@ -138,9 +138,9 @@ rule combine_gene_level_associations:
         pvals=gene_pval_files,
         stats=gene_stat_files
     output:
-        coefs=os.path.join(out_dir, 'merged', '{}_gene_association_coefs.csv'.format(config['name'])),
-        pvals=os.path.join(out_dir, 'merged', '{}_gene_association_pvals.csv'.format(config['name'])),
-        stats=os.path.join(out_dir, 'merged', '{}_gene_association_stats.csv'.format(config['name']))
+        coefs=os.path.join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
+        pvals=os.path.join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
+        stats=os.path.join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name']))
     script: 'src/combine_associations.R'
 
 if 'logit' in feats:
@@ -150,11 +150,11 @@ if 'logit' in feats:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
             coefs=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_coefs.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_coefs.feather'),
             pvals=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_pvals.feather'),
             stats=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.csv')
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/logit_stats.feather')
         script: 'src/logistic_regression.R'
 
 if 'deseq' in feats:
@@ -164,11 +164,11 @@ if 'deseq' in feats:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
             coefs=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_coefs.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_coefs.feather'),
             pvals=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_pvals.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_pvals.feather'),
             stats=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_stats.csv')
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/deseq_stats.feather')
         script: 'src/deseq.R'
 
 if 'survival' in feats:
@@ -178,9 +178,9 @@ if 'survival' in feats:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
             coefs=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_coefs.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_coefs.feather'),
             pvals=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.csv'),
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_pvals.feather'),
             stats=os.path.join(out_dir,
-                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.csv')
+                    'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_stats.feather')
         script: 'src/survival_regression.R'
