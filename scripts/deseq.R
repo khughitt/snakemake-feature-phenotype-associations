@@ -62,6 +62,7 @@ if ('filter' %in% names(pheno_config$params)) {
 
 # create a version of the feature data without the id columns, for convenience
 feat_mat <- as.matrix(feat_dat[, -1])
+feat_mat <- matrix(as.numeric(feat_mat), ncol = ncol(feat_mat))
 
 # DESeq usually expected unprocessed counts; rounding here to allow pre-processed
 # counts to be used..

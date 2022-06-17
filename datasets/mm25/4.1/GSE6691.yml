@@ -5,12 +5,12 @@ name: GSE6691
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE6691/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE6691/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE6691/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE6691/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE6691/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE6691/column-metadata.feather'
   associations:
     disease_stage:
       method: logit

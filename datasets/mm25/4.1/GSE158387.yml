@@ -5,12 +5,12 @@ name: GSE158387
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE158387/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE158387/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE158387/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE158387/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE158387/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE158387/column-metadata.feather'
   associations:
     treatment:
       method: deseq

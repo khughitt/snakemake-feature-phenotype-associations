@@ -5,12 +5,12 @@ name: GSE106218
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE106218/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE106218/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE106218/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE106218/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE106218/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE106218/column-metadata.feather'
   associations:
     iss_stage:
       method: logit

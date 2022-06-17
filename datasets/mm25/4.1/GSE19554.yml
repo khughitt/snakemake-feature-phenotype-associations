@@ -5,12 +5,12 @@ name: GSE19554
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE19554/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE19554/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE19554/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE19554/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE19554/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE19554/column-metadata.feather'
   associations:
     tumor_stage:
       method: logit

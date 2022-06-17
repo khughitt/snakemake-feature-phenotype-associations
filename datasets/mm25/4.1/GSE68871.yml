@@ -5,12 +5,12 @@ name: GSE68871
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE68871/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE68871/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE68871/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE68871/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE68871/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE68871/column-metadata.feather'
   associations:
     treatment_response:
       method: logit

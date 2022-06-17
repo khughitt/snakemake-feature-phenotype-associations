@@ -5,12 +5,12 @@ name: GSE13591
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE13591/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE13591/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE13591/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE13591/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE13591/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE13591/column-metadata.feather'
   associations:
     disease_stage:
       method: logit

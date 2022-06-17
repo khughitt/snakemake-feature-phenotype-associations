@@ -177,6 +177,6 @@ pvals <- Reduce(function(...) inner_join(..., by = feat_id_col), pvals_list)
 stats <- Reduce(function(...) inner_join(..., by = feat_id_col), stats_list)
 
 # store p-values and test statistics in two separate files
-write_csv(coefs, snakemake@output[["coefs"]])
-write_csv(pvals, snakemake@output[["pvals"]])
-write_csv(stats, snakemake@output[["stats"]])
+write_feather(coefs, snakemake@output[["coefs"]])
+write_feather(pvals, snakemake@output[["pvals"]])
+write_feather(stats, snakemake@output[["stats"]])

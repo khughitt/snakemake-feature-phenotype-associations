@@ -5,12 +5,12 @@ name: GSE83503
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE83503/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE83503/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE83503/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE83503/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE83503/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE83503/column-metadata.feather'
   associations:
     pfs_event:
       method: logit

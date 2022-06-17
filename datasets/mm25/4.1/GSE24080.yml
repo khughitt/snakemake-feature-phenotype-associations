@@ -5,12 +5,12 @@ name: GSE24080
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE24080/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE24080/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE24080/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE24080/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE24080/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE24080/column-metadata.feather'
   associations:
     overall_survival:
       method: survival

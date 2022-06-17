@@ -5,12 +5,12 @@ name: GSE2912
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE2912/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE2912/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE2912/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE2912/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE2912/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE2912/column-metadata.feather'
   associations:
     disease_stage:
       method: logit

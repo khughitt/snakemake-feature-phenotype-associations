@@ -5,12 +5,12 @@ name: GSE14519
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.1/geo/final/GSE14519/data.csv'
+    rna: '/data/proj/mm25/4.1/geo/final/GSE14519/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.1/fmap/GSE14519/median/data.csv'
+    rna: '/data/proj/mm25/4.1/fmap/GSE14519/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.1/geo/final/GSE14519/column-metadata.csv'
+  path: '/data/proj/mm25/4.1/geo/final/GSE14519/column-metadata.feather'
   associations:
     treatment:
       method: logit
