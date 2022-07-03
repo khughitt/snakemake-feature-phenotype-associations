@@ -105,12 +105,12 @@ pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "
 #
 rule all:
     input: 
-        os.path.join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
-        os.path.join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name'])),
+        os.path.join(out_dir, 'merged', 'gene_association_coefs.feather'),
+        os.path.join(out_dir, 'merged', 'gene_association_pvals.feather'),
+        os.path.join(out_dir, 'merged', 'gene_association_stats.feather'),
+        os.path.join(out_dir, 'merged', 'pathway_association_coefs.feather'),
+        os.path.join(out_dir, 'merged', 'pathway_association_pvals.feather'),
+        os.path.join(out_dir, 'merged', 'pathway_association_stats.feather'),
         os.path.join(out_dir, 'metadata', 'association_metadata.feather')
 
 rule association_metadata:
@@ -127,9 +127,9 @@ rule combine_pathway_level_associations:
         pvals=pathway_pval_files,
         stats=pathway_stat_files
     output:
-        coefs=os.path.join(out_dir, 'merged', '{}_pathway_association_coefs.feather'.format(config['name'])),
-        pvals=os.path.join(out_dir, 'merged', '{}_pathway_association_pvals.feather'.format(config['name'])),
-        stats=os.path.join(out_dir, 'merged', '{}_pathway_association_stats.feather'.format(config['name']))
+        coefs=os.path.join(out_dir, 'merged', 'pathway_association_coefs.feather'),
+        pvals=os.path.join(out_dir, 'merged', 'pathway_association_pvals.feather'),
+        stats=os.path.join(out_dir, 'merged', 'pathway_association_stats.feather')
     script: 'scripts/combine_associations.R'
 
 rule combine_gene_level_associations:
@@ -138,9 +138,9 @@ rule combine_gene_level_associations:
         pvals=gene_pval_files,
         stats=gene_stat_files
     output:
-        coefs=os.path.join(out_dir, 'merged', '{}_gene_association_coefs.feather'.format(config['name'])),
-        pvals=os.path.join(out_dir, 'merged', '{}_gene_association_pvals.feather'.format(config['name'])),
-        stats=os.path.join(out_dir, 'merged', '{}_gene_association_stats.feather'.format(config['name']))
+        coefs=os.path.join(out_dir, 'merged', 'gene_association_coefs.feather'),
+        pvals=os.path.join(out_dir, 'merged', 'gene_association_pvals.feather'),
+        stats=os.path.join(out_dir, 'merged', 'gene_association_stats.feather')
     script: 'scripts/combine_associations.R'
 
 if 'logit' in feats:

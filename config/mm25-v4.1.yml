@@ -1,7 +1,7 @@
 #
-# MM25 Feature-phenotype association pipeline config
+# MM29 Feature-phenotype association pipeline config
 #
-name: 'mm25'
+name: 'mm29'
 version: '4.1'
 
 # number of permuted versions of the data to use for generating null distributions
