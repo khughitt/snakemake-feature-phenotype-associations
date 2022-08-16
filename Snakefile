@@ -15,6 +15,9 @@ datasets = {}
 
 dataset_cfg_paths = glob.glob(os.path.join(data_cfg_dir, '*.yml'))
 
+if len(dataset_cfg_paths) == 0:
+    raise Exception("No config files found in specific path!")
+
 for infile in dataset_cfg_paths:
     with open(infile, 'r') as fp:
         cfg = yaml.safe_load(fp)
