@@ -1,0 +1,19 @@
+#
+# GSE13591 data source
+# 
+name: GSE13591
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.2/geo/final/GSE13591/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm25/4.2/fmap/GSE13591/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm25/4.2/geo/final/GSE13591/column-metadata.feather'
+  associations:
+    disease_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: disease_stage

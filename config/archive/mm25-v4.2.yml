@@ -2,9 +2,9 @@
 # MM29 Feature-phenotype association pipeline config
 #
 name: 'mm29'
-version: '4.1'
+version: '4.2'
 
 # number of permuted versions of the data to use for generating null distributions
 num_permutations: 1000
 
-output_dir: '/data/proj/mm25/4.1/fassoc'
+output_dir: '/data/proj/mm25/4.2/fassoc'

@@ -3,16 +3,33 @@
 #
 
 #'
-#' load_data - loads a tabular data file stored in one of several supported formats
+#' load_data - loads a dataframe
 #'
-load_data <- function(infile) {
+load_df <- function(infile) {
   if (endsWith(infile, '.csv') || endsWith(infile, '.csv.gz')) {
-    feat_dat <- read_csv(infile, col_types = cols())
+    read_csv(infile, col_types = cols())
   } else if (endsWith(infile, '.tsv') || endsWith(infile, '.tsv.gz')) {
-    feat_dat <- read_tsv(infile, col_types = cols())
+    read_tsv(infile, col_types = cols())
   } else if (endsWith(infile, '.parquet')) {
-    feat_dat <- arrow::read_parquet(infile)
+    arrow::read_parquet(infile)
   } else if (endsWith(infile, '.feather')) {
-    feat_dat <- arrow::read_feather(infile)
+    arrow::read_feather(infile)
   }
+}
+
+#'
+#' load_matrix - loads a numeric matrix 
+#'
+load_matrix <- function(infile) {
+  df <- load_df(infile)
+
+  df <- df %>%
+    column_to_rownames(colnames(df)[1])
+
+  # fix types
+  rnames <- rownames(df)
+  df <- data.frame(lapply(df, as.numeric))
+  rownames(df) <- rnames
+
+  as.matrix(df)
 }

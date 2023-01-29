@@ -1,0 +1,19 @@
+#
+# GSE117847 data source
+# 
+name: GSE117847
+
+features:
+  genes:
+    rna: '/data/proj/mm25/4.2/geo/final/GSE117847/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm25/4.2/fmap/GSE117847/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm25/4.2/geo/final/GSE117847/column-metadata.feather'
+  associations:
+    mm_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: disease_stage

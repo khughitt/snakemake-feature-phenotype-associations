@@ -121,6 +121,7 @@ rule association_metadata:
         os.path.join(out_dir, 'metadata', 'association_metadata.feather')
     params:
         cfg_paths=dataset_cfg_paths
+    threads: 1
     script:
         "scripts/association_metadata.py"
 
@@ -129,6 +130,7 @@ rule combine_pathway_level_associations:
         coefs=pathway_coef_files,
         pvals=pathway_pval_files,
         stats=pathway_stat_files
+    threads: 1
     output:
         coefs=os.path.join(out_dir, 'merged', 'pathway_association_coefs.feather'),
         pvals=os.path.join(out_dir, 'merged', 'pathway_association_pvals.feather'),
@@ -140,6 +142,7 @@ rule combine_gene_level_associations:
         coefs=gene_coef_files,
         pvals=gene_pval_files,
         stats=gene_stat_files
+    threads: 1
     output:
         coefs=os.path.join(out_dir, 'merged', 'gene_association_coefs.feather'),
         pvals=os.path.join(out_dir, 'merged', 'gene_association_pvals.feather'),
@@ -149,6 +152,7 @@ rule combine_gene_level_associations:
 if 'logit' in feats:
     rule logistic_regression:
         input: unpack(get_inputs)
+        threads: 1
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
@@ -163,6 +167,7 @@ if 'logit' in feats:
 if 'deseq' in feats:
     rule deseq:
         input: unpack(get_inputs)
+        threads: 16
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
         output:
@@ -179,6 +184,7 @@ if 'survival' in feats:
         input: unpack(get_inputs)
         params:
             config=lambda wildcards, output: datasets[wildcards.dataset]
+        threads: 1
         output:
             coefs=os.path.join(out_dir,
                     'datasets/{dataset}/{feature_level}/{feature_type}/{phenotype}/survival_coefs.feather'),

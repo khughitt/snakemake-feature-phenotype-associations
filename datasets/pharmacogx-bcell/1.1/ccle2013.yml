@@ -1,0 +1,19 @@
+#
+# CCLE2013 PharmacoGx data source
+# 
+name: CCLE2013
+
+features:
+  genes:
+    rna: '/data/nih/pharmacogx/bcell/1.1/ccle2013/features/rna.feather'
+  gene_sets:
+    rna: '/data/fmap/pharmacogx-bcell/1.1/ccle2013/rna/merged/msigdb/normed/median/gene_sets.parquet'
+
+phenotypes:
+  path: '/data/nih/pharmacogx/bcell/1.1/ccle2013/phenotypes/auc_published.feather'
+  associations:
+    drug_sensitivity:
+      method: 'spearman_cor'
+      category: treatment
+      params:
+        collapse_func: 'maxabs'

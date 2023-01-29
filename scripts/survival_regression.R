@@ -11,10 +11,10 @@ source('scripts/utils.R')
 set.seed(1)
 
 # load feature data
-feat_dat <- load_data(snakemake@input$feat_infile)
+feat_mat <- load_matrix(snakemake@input$feat_infile)
 
-# tmp / sanity check...
-if (sum(is.na(feat_dat)) > 0) {
+# sanity check...
+if (sum(is.na(feat_mat)) > 0) {
   stop("missing values!")
 }
 
@@ -27,7 +27,7 @@ phenotype <- snakemake@wildcards$phenotype
 pheno_config <- snakemake@params$config$phenotypes$associations[[phenotype]]
 
 # load phenotype data
-pheno_dat <- load_data(snakemake@input$pheno_infile)
+pheno_dat <- load_df(snakemake@input$pheno_infile)
 
 # determine name of sample id column
 sample_id_col <- colnames(pheno_dat)[1]
@@ -35,11 +35,11 @@ sample_id_col <- colnames(pheno_dat)[1]
 # ensure that sample order is consistent between feature/pheno data
 sample_ids <- pull(pheno_dat, sample_id_col)
 
-if (!all(colnames(feat_dat)[-1] %in% sample_ids)) {
+if (!all(colnames(feat_mat) %in% sample_ids)) {
   stop("Sample ID mismatch! Check to make sure first column in metadata matches colnames in expression data.")
 }
 
-ind <- match(colnames(feat_dat)[-1], sample_ids)
+ind <- match(colnames(feat_mat), sample_ids)
 pheno_dat <- pheno_dat[ind, ]
 
 # limit to specific rows, if requested
@@ -52,19 +52,12 @@ if ('filter' %in% names(pheno_config$params)) {
   }
 
   pheno_dat <- pheno_dat[mask, ]
-
-  # apply same mask to the feature data, including the id column
-  feat_dat <- feat_dat[, c(TRUE, mask)]
+  feat_mat <- feat_mat[, mask]
 }
 
-save.image(sprintf('/tmp/%s_%s_surv.rda', snakemake@wildcards$dataset, snakemake@wildcards$phenotype))
-
-if (!all(colnames(feat_dat)[-1] == pull(pheno_dat, sample_id_col))) {
+if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
   stop("Feature/phenotype sample IDs do not match!")
 }
-
-# create a version of the feature data without the id columns, for convenience
-feat_mat <- as.matrix(feat_dat[, -1])
 
 # get survival time and event data
 surv_time <- as.numeric(pull(pheno_dat, pheno_config$params$time))
@@ -97,8 +90,12 @@ test_stats <- fits[2, ]
 pvals <- fits[3, ]
 
 # store result
-feat_id_col <- colnames(feat_dat)[1]
-feat_ids <- as.character(pull(feat_dat, feat_id_col))
+if (snakemake@wildcards$feature_level == "gene_sets") {
+  feat_id_col <- 'gene_set'
+} else {
+  feat_id_col <- 'symbol'
+}
+feat_ids <- rownames(feat_mat)
 
 res <- data.frame(feat_ids, coefs, test_stats, pvals, stringsAsFactors = FALSE)
 

@@ -1,0 +1,10 @@
+#
+# MM30 Feature-phenotype association pipeline config
+#
+name: 'mm30'
+version: '5.0'
+
+# number of permuted versions of the data to use for generating null distributions
+num_permutations: 1000
+
+output_dir: '/data/proj/mm25/5.0/fassoc'
