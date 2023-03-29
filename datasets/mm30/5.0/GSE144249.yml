@@ -1,16 +1,16 @@
 #
-# GSE144249 data source
+# GSE15.049 data source
 # 
-name: GSE144249 
+name: GSE15.049 
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.2/geo/final/GSE144249/data.feather'
+    rna: '/data/proj/mm30/5.0/geo/final/GSE15.049/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.2/fmap/GSE144249/median/data.feather'
+    rna: '/data/proj/mm30/5.0/fmap/GSE15.049/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.2/geo/final/GSE144249/column-metadata.feather'
+  path: '/data/proj/mm30/5.0/geo/final/GSE15.049/column-metadata.feather'
   associations:
     treatment:
       method: deseq

@@ -7,7 +7,7 @@ features:
   genes:
     rna: '/data/clean/mmrf/IA18/rnaseq/611e783706f8c500013f9456_Expression Estimates - Gene Based_MMRF_CoMMpass_IA18_salmon_geneUnstrandedIgFiltered_tpm.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.2/fmap/mmrf-ia18/median/data.feather'
+    rna: '/data/proj/mm30/5.0/fmap/mmrf-ia18/median/data.feather'
 
 phenotypes:
   path: '/data/clean/mmrf/IA18/clinical_data_tables/MMRF_CoMMpass_IA18_combined_metadata.feather'

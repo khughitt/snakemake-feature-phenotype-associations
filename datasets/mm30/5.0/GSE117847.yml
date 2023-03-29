@@ -5,12 +5,12 @@ name: GSE117847
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.2/geo/final/GSE117847/data.feather'
+    rna: '/data/proj/mm30/5.0/geo/final/GSE117847/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.2/fmap/GSE117847/median/data.feather'
+    rna: '/data/proj/mm30/5.0/fmap/GSE117847/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.2/geo/final/GSE117847/column-metadata.feather'
+  path: '/data/proj/mm30/5.0/geo/final/GSE117847/column-metadata.feather'
   associations:
     mm_stage:
       method: logit

@@ -5,12 +5,12 @@ name: GSE7039
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.2/geo/final/GSE7039/data.feather'
+    rna: '/data/proj/mm30/5.0/geo/final/GSE7039/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.2/fmap/GSE7039/median/data.feather'
+    rna: '/data/proj/mm30/5.0/fmap/GSE7039/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.2/geo/final/GSE7039/column-metadata.feather'
+  path: '/data/proj/mm30/5.0/geo/final/GSE7039/column-metadata.feather'
   associations:
     overall_survival:
       method: survival

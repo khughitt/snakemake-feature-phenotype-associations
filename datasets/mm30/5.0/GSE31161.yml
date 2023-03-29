@@ -5,12 +5,12 @@ name: GSE31161
 
 features:
   genes:
-    rna: '/data/proj/mm25/4.2/geo/final/GSE31161/data.feather'
+    rna: '/data/proj/mm30/5.0/geo/final/GSE31161/data.feather'
   gene_sets:
-    rna: '/data/proj/mm25/4.2/fmap/GSE31161/median/data.feather'
+    rna: '/data/proj/mm30/5.0/fmap/GSE31161/median/data.feather'
 
 phenotypes:
-  path: '/data/proj/mm25/4.2/geo/final/GSE31161/column-metadata.feather'
+  path: '/data/proj/mm30/5.0/geo/final/GSE31161/column-metadata.feather'
   associations:
     relapsed:
       method: logit
