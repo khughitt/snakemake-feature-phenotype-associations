@@ -1,0 +1,19 @@
+#
+# GSE19554 data source
+# 
+name: GSE19554
+
+features:
+  genes:
+    rna: '/data/proj/mm30/6.0/geo/final/GSE19554/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/6.0/fmap/GSE19554/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/6.0/geo/final/GSE19554/column-metadata.feather'
+  associations:
+    tumor_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: tumor_stage

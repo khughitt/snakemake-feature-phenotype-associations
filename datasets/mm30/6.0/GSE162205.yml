@@ -1,0 +1,20 @@
+#
+# GSE162205 data source
+# 
+name: GSE162205
+
+features:
+  genes:
+    rna: '/data/proj/mm30/6.0/geo/final/GSE162205/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/6.0/fmap/GSE162205/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/6.0/geo/final/GSE162205/column-metadata.feather'
+  associations:
+    treatment:
+      method: deseq
+      category: treatment
+      design:
+        full: "~time_hours + treatment + replicate"
+        reduced: "~replicate"
