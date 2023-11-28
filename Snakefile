@@ -107,14 +107,27 @@ pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "
 # rules
 #
 rule all:
+    input:
+        os.path.join(out_dir, "packages", "genes", "datapackage.yml"),
+        os.path.join(out_dir, "packages", "pathways", "datapackage.yml")
+
+rule build_pathway_association_package:
+    input:
+        os.path.join(out_dir, 'merged', 'pathway_association_pvals.feather')
+    output:
+        os.path.join(out_dir, "packages", "pathways", "datapackage.yml")
+    params:
+        target="pathways"
+    script: "scripts/build_data_package.py"
+
+rule build_gene_association_package:
     input: 
-        os.path.join(out_dir, 'merged', 'gene_association_coefs.feather'),
-        os.path.join(out_dir, 'merged', 'gene_association_pvals.feather'),
-        os.path.join(out_dir, 'merged', 'gene_association_stats.feather'),
-        os.path.join(out_dir, 'merged', 'pathway_association_coefs.feather'),
-        os.path.join(out_dir, 'merged', 'pathway_association_pvals.feather'),
-        os.path.join(out_dir, 'merged', 'pathway_association_stats.feather'),
-        os.path.join(out_dir, 'metadata', 'association_metadata.feather')
+        os.path.join(out_dir, 'merged', 'gene_association_pvals.feather')
+    output:
+        os.path.join(out_dir, "packages", "genes", "datapackage.yml")
+    params:
+        target="genes"
+    script: "scripts/build_data_package.py"
 
 rule association_metadata:
     output:

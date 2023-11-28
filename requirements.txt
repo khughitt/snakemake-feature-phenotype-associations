@@ -5,8 +5,9 @@ r-arrow
 r-metap
 r-remotes
 r-survival
-bioconductor-deseq2
 r-tidyverse
+bioconductor-deseq2
+frictionless
 lz4
 pyarrow
 numba

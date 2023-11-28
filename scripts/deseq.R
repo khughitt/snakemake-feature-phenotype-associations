@@ -6,7 +6,7 @@ suppressMessages(library(arrow))
 suppressMessages(library(tidyverse))
 suppressMessages(library(DESeq2))
 
-source('scripts/utils.R')
+source("scripts/utils.R")
 
 set.seed(1)
 
@@ -43,7 +43,7 @@ ind <- match(colnames(feat_mat), sample_ids)
 pheno_dat <- pheno_dat[ind, ]
 
 # limit to specific rows, if requested
-if ('filter' %in% names(pheno_config$params)) {
+if ("filter" %in% names(pheno_config$params)) {
   # determine which samples pass filter
   mask <- pull(pheno_dat, pheno_config$params$filter$field) %in% pheno_config$params$filter$values
 
@@ -59,6 +59,14 @@ if ('filter' %in% names(pheno_config$params)) {
 # counts to be used..
 feat_mat <- round(feat_mat)
 
+if ("replicate" %in% colnames(pheno_dat)) {
+  pheno_dat$replicate <- factor(pheno_dat$replicate)
+}
+
+if ("treatment" %in% colnames(pheno_dat)) {
+  pheno_dat$treatment <- make.names(pheno_dat$treatment)
+}
+
 if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
   stop("Feature/phenotype sample IDs do not match!")
 }
@@ -66,9 +74,19 @@ if (!all(colnames(feat_mat) == pull(pheno_dat, sample_id_col))) {
 # fit DESeq2 model
 dds <- DESeqDataSetFromMatrix(countData = feat_mat,
                               colData = pheno_dat,
-                              design= formula(pheno_config$design$full))
+                              design = formula(pheno_config$design$full))
 
-dds <- DESeq(dds, test="LRT", reduced=formula(pheno_config$design$reduced))
+dds <- tryCatch({
+  DESeq(dds, test = "LRT", reduced = formula(pheno_config$design$reduced))
+}, error = function(e) {
+  # in rare cases dispersion estimation may fail due to low variance;
+  # in this case, we can fall back on nbinomLRT
+  dds <- estimateSizeFactors(dds)
+  dds <- estimateDispersionsGeneEst(dds)
+  dispersions(dds) <- mcols(dds)$dispGeneEst
+
+  nbinomLRT(dds, reduced = formula(pheno_config$design$reduced))
+})
 
 deseqResult <- results(dds)
 
@@ -78,9 +96,9 @@ pvals <- deseqResult$pvalue
 
 # store result
 if (snakemake@wildcards$feature_level == "gene_sets") {
-  feat_id_col <- 'gene_set'
+  feat_id_col <- "gene_set"
 } else {
-  feat_id_col <- 'symbol'
+  feat_id_col <- "symbol"
 }
 feat_ids <- rownames(feat_mat)
 
@@ -89,12 +107,12 @@ res <- data.frame(feat_ids, coefs, test_stats, pvals, stringsAsFactors = FALSE)
 # update column names; dataset id is added as a prefix to avoid collisions when
 # joining results from multiple datasets later on
 col_prefix <- sprintf("%s_%s_", snakemake@wildcards$dataset, snakemake@wildcards$phenotype)
-colnames(res) <- c(feat_id_col, paste0(col_prefix, c('coef', 'stat', 'pval')))
+colnames(res) <- c(feat_id_col, paste0(col_prefix, c("coef", "stat", "pval")))
 
 # for microarray data which may include multiple gene symbols for a single
 # row (e.g. "ABC1 // ABC2 // ETC"), split each such entries into multiple
 # rows
-if ((feat_id_col == 'symbol') && (any(grepl('//', feat_ids)))) {
+if ((feat_id_col == "symbol") && (any(grepl("//", feat_ids)))) {
   res <- res %>%
     separate_rows(symbol, sep = " ?//+ ?")
 }
@@ -121,13 +139,13 @@ res <- res %>%
   arrange(get(feat_id_col))
 
 coefs <- res %>%
-  select(-ends_with('stat'), -ends_with('pval'))
+  select(-ends_with("stat"), -ends_with("pval"))
 
 pvals <- res %>%
-  select(-ends_with('stat'), -ends_with('coef'))
+  select(-ends_with("stat"), -ends_with("coef"))
 
 stats <- res %>%
-  select(-ends_with('pval'), -ends_with('coef'))
+  select(-ends_with("pval"), -ends_with("coef"))
 
 # strip "_pval" and "_stat" column names suffixes; no longer needed
 colnames(coefs) <- sub("_coef$", "", colnames(coefs))
