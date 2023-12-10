@@ -1,0 +1,19 @@
+#
+# GSE16791 data source
+# 
+name: GSE16791
+
+features:
+  genes:
+    rna: '/data/proj/mm30/7.0/geo/final/GSE16791/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/7.0/fmap/GSE16791/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/7.0/geo/final/GSE16791/column-metadata.feather'
+  associations:
+    disease_stage:
+      method: logit
+      category: disease_stage
+      params:
+        field: durie_salmon_stage

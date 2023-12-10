@@ -2,3 +2,5 @@
 .RData
 *.bak
 __pycache__
+archive
+unused

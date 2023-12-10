@@ -1,0 +1,26 @@
+#
+# GSE24080 data source
+# 
+name: GSE24080
+
+features:
+  genes:
+    rna: '/data/proj/mm30/7.0/geo/final/GSE24080/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/7.0/fmap/GSE24080/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/7.0/geo/final/GSE24080/column-metadata.feather'
+  associations:
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: os_censor 
+    event_free_survival:
+      method: survival
+      category: survival
+      params:
+        time: efs_time
+        event: efs_censor

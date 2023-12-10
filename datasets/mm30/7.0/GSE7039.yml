@@ -1,0 +1,20 @@
+#
+# GSE7039 data source
+# 
+name: GSE7039
+
+features:
+  genes:
+    rna: '/data/proj/mm30/7.0/geo/final/GSE7039/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/7.0/fmap/GSE7039/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/7.0/geo/final/GSE7039/column-metadata.feather'
+  associations:
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: patient_died

@@ -109,7 +109,8 @@ pathway_stat_files = ["{}_stats.feather".format(x) for x in output_prefixes if "
 rule all:
     input:
         os.path.join(out_dir, "packages", "genes", "datapackage.yml"),
-        os.path.join(out_dir, "packages", "pathways", "datapackage.yml")
+        os.path.join(out_dir, "packages", "pathways", "datapackage.yml"),
+        os.path.join(out_dir, 'metadata', 'association_metadata.feather')
 
 rule build_pathway_association_package:
     input:

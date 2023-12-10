@@ -1,0 +1,20 @@
+#
+# GSE144249 data source
+# 
+name: GSE144249 
+
+features:
+  genes:
+    rna: '/data/proj/mm30/7.0/geo/final/GSE144249/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/7.0/fmap/GSE144249/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/7.0/geo/final/GSE144249/column-metadata.feather'
+  associations:
+    treatment:
+      method: deseq
+      category: treatment
+      design:
+        full: "~drug_resistance + replicate"
+        reduced: "~replicate"

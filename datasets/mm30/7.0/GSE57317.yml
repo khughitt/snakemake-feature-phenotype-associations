@@ -1,0 +1,20 @@
+#
+# GSE57317 data source
+# 
+name: GSE57317
+
+features:
+  genes:
+    rna: '/data/proj/mm30/7.0/geo/final/GSE57317/data.feather'
+  gene_sets:
+    rna: '/data/proj/mm30/7.0/fmap/GSE57317/median/data.feather'
+
+phenotypes:
+  path: '/data/proj/mm30/7.0/geo/final/GSE57317/column-metadata.feather'
+  associations:
+    overall_survival:
+      method: survival
+      category: survival
+      params:
+        time: os_time
+        event: os_event
